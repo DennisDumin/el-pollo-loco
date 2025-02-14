@@ -9,6 +9,12 @@ class MovableObject {
     speed = 0.15;
     otherDirection = false;
 
+    applyGravity() {
+        setInterval(() => {
+
+        }, 1000 / 25);
+    }
+
     loadImage(path) {
         this.img = new Image();
         this.img.src = path;
@@ -31,4 +37,11 @@ class MovableObject {
             this.x -= this.speed;
         }, 1000 / 60);
     };
+
+    playAnimation(images) {
+        let i = this.currentImage % this.IMAGES_WALKING.length;
+        let path = images[i];
+        this.img = this.imageCache[path];
+        this.currentImage++;
+    }
 }

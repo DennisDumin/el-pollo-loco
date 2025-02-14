@@ -1,8 +1,6 @@
 class World {
     character;
-    backgroundLayer = [];
-    enemies = [new Chicken(), new Chicken(), new Chicken()];
-    clouds = [new Cloud()];
+    level = level1;
     keyboard;
     canvas;
     ctx;
@@ -13,7 +11,6 @@ class World {
         this.canvas = canvas;
         this.keyboard = keyboard;
         this.character = new Character(this);
-        this.generateBackground();
         this.draw();
         this.setWorld();
     }
@@ -22,27 +19,12 @@ class World {
         this.character.world = this;
     }
 
-    generateBackground() {
-        const numRepetitions = 10;
-        for (let i = -2; i < numRepetitions; i++) {
-            let xOffset = 1438 * i;
-            this.backgroundLayer.push(new BackgroundObject('img/5_background/layers/air.png', xOffset, 0));
-            this.backgroundLayer.push(new BackgroundObject('img/5_background/layers/3_third_layer/1.png', xOffset, 75));
-            this.backgroundLayer.push(new BackgroundObject('img/5_background/layers/2_second_layer/1.png', xOffset, 75));
-            this.backgroundLayer.push(new BackgroundObject('img/5_background/layers/1_first_layer/1.png', xOffset, 75));
-            this.backgroundLayer.push(new BackgroundObject('img/5_background/layers/air.png', xOffset + 719, 0));
-            this.backgroundLayer.push(new BackgroundObject('img/5_background/layers/3_third_layer/2.png', xOffset + 719, 75));
-            this.backgroundLayer.push(new BackgroundObject('img/5_background/layers/2_second_layer/2.png', xOffset + 719, 75));
-            this.backgroundLayer.push(new BackgroundObject('img/5_background/layers/1_first_layer/2.png', xOffset + 719, 75));
-        }
-    }
-
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.translate(this.camera_x, 0);
-        this.addObjectsToMap(this.backgroundLayer);
-        this.addObjectsToMap(this.enemies);
-        this.addObjectsToMap(this.clouds);
+        this.addObjectsToMap(this.level.backgroundLayer);
+        this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.level.clouds);
         this.addToMap(this.character);
         this.ctx.translate(-this.camera_x, 0);
         let self = this;
