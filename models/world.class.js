@@ -13,6 +13,17 @@ class World {
         this.character = new Character(this);
         this.draw();
         this.setWorld();
+        this.checkCollisions();
+    }
+
+    checkCollisions() {
+        setInterval(() => {
+            this.level.enemies.forEach((enemy) => {
+               if (this.character.isColliding(enemy)) {
+                console.log('kollidiert with', enemy)
+               } 
+            });
+        }, 1000);
     }
 
     setWorld() {
@@ -45,7 +56,7 @@ class World {
         mo.drawFrame(this.ctx);
 
         if (mo.otherDirection) {
-            flipImageBack(mo);
+            this.flipImageBack(mo);
         }
     }
 
