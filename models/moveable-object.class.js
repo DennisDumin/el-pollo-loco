@@ -10,6 +10,10 @@ class MovableObject {
     speedY = 0;
     acceleration = 2.5;
     otherDirection = false;
+    offsetX = 0;
+    offsetY = 0;
+    offsetWidth = 0;
+    offsetHeight = 0;
 
     applyGravity() {
         setInterval(() => {
@@ -26,10 +30,12 @@ class MovableObject {
 
     drawFrame(ctx) {
         if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
+            const { x, y, width, height } = this.getHitbox(); 
+    
             ctx.beginPath();
-            ctx.lineWidth = '5';
-            ctx.strokeStyle = 'blue';
-            ctx.rect(this.x, this.y, this.width, this.height);
+            ctx.lineWidth = 2; 
+            ctx.strokeStyle = 'red'; 
+            ctx.rect(x, y, width, height); 
             ctx.stroke();
         }
     }
@@ -71,9 +77,23 @@ class MovableObject {
     }
 
     isColliding(mo) {
-        return this.x + this.width > mo.x &&
-            this.y + this.height > mo.y &&
-            this.x < mo.x &&
-            this.y < mo.y + mo.height;
+        const { x, y, width, height } = this.getHitbox();
+        const { x: otherX, y: otherY, width: otherWidth, height: otherHeight } = mo.getHitbox();
+    
+        return (
+            x + width >= otherX &&
+            x <= otherX + otherWidth &&
+            y + height >= otherY &&
+            y <= otherY + otherHeight
+        );
+    }
+    
+    getHitbox() {
+        return {
+            x: this.x + this.offsetX,
+            y: this.y + this.offsetY,
+            width: this.offsetWidth,
+            height: this.offsetHeight
+        };
     }
 }

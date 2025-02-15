@@ -15,6 +15,10 @@ class Chicken extends MovableObject {
         this.x = 300 + Math.random() * 500;
         this.speed = 0.15 + Math.random() * 0.5;
         this.animate();
+        this.offsetHeight = 65;
+        this.offsetWidth = 65;
+        this.offsetX = 5;
+        this.offsetY = 5;
     }
 
     animate() {
