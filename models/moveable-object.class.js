@@ -14,6 +14,8 @@ class MovableObject {
     offsetY = 0;
     offsetWidth = 0;
     offsetHeight = 0;
+    energy = 100;
+    lastHit = 0;
 
     applyGravity() {
         setInterval(() => {
@@ -28,14 +30,33 @@ class MovableObject {
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     }
 
+    hit() {
+        this.energy -= 10;
+        if (this.energy < 0) {
+            this.energy = 0;
+        } else {
+            this.lastHit = new Date().getTime();
+        }
+    }
+
+    isHurt() {
+        let timepassed = new Date().getTime() - this.lastHit;
+        timepassed = timepassed / 1000;
+        return timepassed < 1;
+    }
+
+    isDead() {
+        return this.energy == 0;
+    }
+
     drawFrame(ctx) {
         if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
-            const { x, y, width, height } = this.getHitbox(); 
-    
+            const { x, y, width, height } = this.getHitbox();
+
             ctx.beginPath();
-            ctx.lineWidth = 2; 
-            ctx.strokeStyle = 'red'; 
-            ctx.rect(x, y, width, height); 
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'red';
+            ctx.rect(x, y, width, height);
             ctx.stroke();
         }
     }
@@ -66,7 +87,7 @@ class MovableObject {
     }
 
     playAnimation(images) {
-        let i = this.currentImage % this.IMAGES_WALKING.length;
+        let i = this.currentImage % images.length;
         let path = images[i];
         this.img = this.imageCache[path];
         this.currentImage++;
@@ -79,7 +100,7 @@ class MovableObject {
     isColliding(mo) {
         const { x, y, width, height } = this.getHitbox();
         const { x: otherX, y: otherY, width: otherWidth, height: otherHeight } = mo.getHitbox();
-    
+
         return (
             x + width >= otherX &&
             x <= otherX + otherWidth &&
@@ -87,7 +108,7 @@ class MovableObject {
             y <= otherY + otherHeight
         );
     }
-    
+
     getHitbox() {
         return {
             x: this.x + this.offsetX,
