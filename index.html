@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="img/3_enemies_chicken/chicken_normal/1_walk/1_w.png">
     <link rel="stylesheet" href="style.css">
     <script src="models/drawable-object.class.js"></script>
     <script src="models/moveable-object.class.js"></script>
@@ -17,19 +18,65 @@
     <script src="models/status-bar.class.js"></script>
     <script src="models/throwable-object.class.js"></script>
     <script src="models/endboss.class.js"></script>
+    <script src="js/startscreen.js"></script>
     <script src="levels/level1.js"></script>
     <script src="js/game.js"></script>
     <title>El Pollo Loco</title>
 </head>
 
-<body onload="init()">
-
+<body onload="">
     <h1>El Pollo Loco</h1>
 
-    <canvas width="720" height="480" id="canvas">
+    <!-- Startscreen -->
+    <div id="startscreen" class="startscreen">
+        <img src="img/9_intro_outro_screens/start/startscreen_1.png" alt="Startscreen" />
+        <div class="menu">
+            <button onclick="startGame()">New Game</button>
+            <button onclick="openControls()">Controls</button>
+            <button onclick="openImprint()">Imprint</button>
+        </div>
+    </div>
 
-    </canvas>
+    <!-- Controls Modal -->
+<div id="controlsModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeControls()">&times;</span>
+        <h2 class="control-h2">Controls</h2>
+        <div class="control">
+            <div class="control-line"><img src="img/menu/keyboard_arrow_left.svg" alt="Arrow Left Icon"></div>
+            <div class="control-line">Move Left</div>
+        </div>
+        <div class="control">
+            <div class="control-line"><img src="img/menu/keyboard_arrow_right.svg" alt="Arrow Right Icon"></div>
+            <div class="control-line">Move Right</div>
+        </div>
+        <div class="control">
+            <div class="control-line"><img src="img/menu/space_bar.svg" alt="Space Bar Icon"></div>
+            <div class="control-line">Jump</div>
+        </div>
+        <div class="control">
+            <div class="control-line">D</div>
+            <div class="control-line">Throw Salsa Bottles</div>
+        </div>
+    </div>
+</div>
 
+    <!-- Imprint Modal -->
+    <div id="imprintModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeImprint()">&times;</span>
+            <h2>Impressum</h2>
+            <p>Dennis Dumin</p>
+            <p>Tepeweg 11</p>
+            <p>45897 Gelsenkirchen</p>
+
+            <h3>Kontakt</h3>
+            <p>E-Mail: dumindennis@gmail.com</p>
+        </div>
+    </div>
+
+    <!-- Spielfläche -->
+    <canvas width="720" height="480" id="canvas"></canvas>
 
 </body>
 
