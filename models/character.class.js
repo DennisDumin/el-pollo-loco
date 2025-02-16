@@ -50,6 +50,7 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_DEAD);
         this.loadImages(this.IMAGES_HURT);
         this.world = world;
+        this.lastDamageTime = 0;
         this.applyGravity();
         this.animate();
         this.offsetHeight = 136;
@@ -79,8 +80,8 @@ class Character extends MovableObject {
 
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD);
-            } else if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
+            } else if (this.isCollidingWithEnemy() && !this.isHurt()) { 
+                this.getDamage();
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING);
             } else {
@@ -90,5 +91,24 @@ class Character extends MovableObject {
                 }
             }
         }, 50);
+    }
+
+    jump() {
+        this.speedY = 25;
+    }
+
+    getDamage() {
+        const now = Date.now();
+        const damageCooldown = 1500;
+    
+        if (now - this.lastDamageTime >= damageCooldown) {
+            this.hit();
+            this.playAnimation(this.IMAGES_HURT);
+            this.lastDamageTime = now;
+        }
+    }
+
+    isCollidingWithEnemy() {
+        return this.world.level.enemies.some(enemy => this.isColliding(enemy));
     }
 }

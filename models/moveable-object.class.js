@@ -20,12 +20,15 @@ class MovableObject extends DrawableObject {
     }
 
     hit() {
-        this.energy = Math.max(0, this.energy - 10);
-        this.lastHit = Date.now();
+        if (!this.isHurt()) {  
+            this.energy = Math.max(0, this.energy - 10);
+            this.lastHit = Date.now();
+            this.lastDamageTime = Date.now();
+        }
     }
 
     isHurt() {
-        return (Date.now() - this.lastHit) / 1000 < 1;
+        return (Date.now() - this.lastHit) < 1500;
     }
 
     isDead() {
@@ -53,10 +56,6 @@ class MovableObject extends DrawableObject {
         let path = images[i];
         this.img = this.imageCache[path];
         this.currentImage++;
-    }
-
-    jump() {
-        this.speedY = 25;
     }
 
     isColliding(mo) {

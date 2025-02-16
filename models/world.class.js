@@ -22,7 +22,7 @@ class World {
         setInterval(() => {
             this.checkCollisions();
             this.checkThrowableObjects();
-        }, 1000);
+        }, 1000 / 60);
     }
 
     checkThrowableObjects() {
