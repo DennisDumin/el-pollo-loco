@@ -53,7 +53,7 @@ class Character extends MovableObject {
         this.applyGravity();
         this.animate();
         this.offsetHeight = 136;
-        this.offsetWidth = 60;
+        this.offsetWidth = 65;
         this.offsetX = 30;
         this.offsetY = 93;
     }
