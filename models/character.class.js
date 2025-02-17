@@ -114,6 +114,7 @@ class Character extends MovableObject {
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD);
             } else if (this.isHurt()) {
+                this.hurtSound.play();
                 this.idleTime = null
                 this.playAnimation(this.IMAGES_HURT);
             } else if (this.isAboveGround()) {
@@ -132,23 +133,12 @@ class Character extends MovableObject {
         this.speedY = 25;
     }
 
-    getDamage() {
-        const hurtCooldown = 1500;
-
-        if (Date.now() - this.lastHurtSoundTime >= hurtCooldown) {
-            this.hurtSound.play();
-            this.lastHurtSoundTime = Date.now();
-        }
-        this.playAnimation(this.IMAGES_HURT);
-    }
-
-
     isCollidingWithEnemy() {
         return this.world.level.enemies.some(enemy => this.isColliding(enemy));
     }
 
     getIdleAnimation() {
-        let longIdleTime = 6000;
+        let longIdleTime = 5000;
         if (!this.idleTime) {
             this.idleTime = Date.now()
         } else if (Date.now() - this.idleTime >= longIdleTime) {
@@ -158,7 +148,4 @@ class Character extends MovableObject {
         this.playAnimation(this.IMAGES_IDLE)
     }
 
-    resetIdleTimer() {
-        this.lastActionTime = Date.now();
-    }
 }
