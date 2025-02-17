@@ -1,5 +1,4 @@
 class StatusBarCoin extends DrawableObject {
-
     IMAGES = [
         'img/7_statusbars/1_statusbar/1_statusbar_coin/blue/0.png',
         'img/7_statusbars/1_statusbar/1_statusbar_coin/blue/20.png',
@@ -10,38 +9,24 @@ class StatusBarCoin extends DrawableObject {
     ];
 
     currentCoins = 0;
-    
+
     constructor() {
         super();
-    
         this.loadImages(this.IMAGES);
         this.x = 10;
         this.y = 50;
         this.width = 240;
-        this.height= 64;
-        this.updateCoinBar();
-    };
+        this.height = 64;
+        this.setPercentage(0);
+    }
 
-    updateCoinBar() {
-        if (this.currentCoins >= 0 && this.currentCoins < this.IMAGES.length) {
-            let path = this.IMAGES[this.currentCoins];
-            this.img = this.imageCache[path];
-            if (this.currentCoins === this.IMAGES.length - 1) {
-                setTimeout(() => {
-                    this.currentCoins = 0;
-                    this.updateCoinBar();
-                }, 1); 
-            };
-        };
-    };
+    setPercentage(percentage) {
+        let index = Math.min(this.IMAGES.length - 1, Math.floor((percentage / 100) * (this.IMAGES.length - 1)));
+        this.img = this.imageCache[this.IMAGES[index]];
+    }
 
-    addCoin() {
-        if (this.currentCoins < this.IMAGES.length - 1) {
-            this.currentCoins++;
-            this.updateCoinBar();
-        } else {
-            this.currentCoins = this.IMAGES.length - 1;
-            this.updateCoinBar();
-        };
-    };
-};
+    addCoins() {
+        this.currentCoins = Math.min(this.currentCoins + 1, 5);
+        this.setPercentage(this.currentCoins * 20); 
+    }
+}

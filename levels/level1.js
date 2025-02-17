@@ -2,18 +2,23 @@ let level1;
 
 function initLevel() {
     level1 = new Level(
-    [
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Endboss()
-    ],
-    [
-        new Cloud()
-    ],
+        [
+            new Chicken(),
+            new Chicken(),
+            new Chicken(),
+            new Endboss()
+        ],
+        [
+            new Coin(250, 150),
+            new Coin(400, 50),
+            new Coin(450, 100)
+        ],
+        [
+            new Cloud()
+        ],
 
-    generateBackground()
-);
+        generateBackground()
+    );
 }
 
 function generateBackground() {
