@@ -1,5 +1,8 @@
 let canvas;
 let world;
+let levelMusic = new Audio('audio/music.mp3');
+levelMusic.loop = true;
+levelMusic.volume = 0.3;
 let keyboard = new Keyboard();
 
 function init() {

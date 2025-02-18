@@ -1,4 +1,5 @@
 function startGame() {
+    levelMusic.play();
     let startscreen = document.getElementById('startscreen');
     let canvas = document.getElementById('canvas');
     startscreen.classList.add('fade-out');
