@@ -120,17 +120,17 @@ class Character extends MovableObject {
 
         setInterval(() => {
             if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD, 10);
+                this.playAnimation(this.IMAGES_DEAD, 2);
             } else if (this.isHurt()) {
                 this.hurtSound.play();
                 this.idleTime = null
                 this.snoreSound.pause();
-                this.playAnimation(this.IMAGES_HURT, 10);
+                this.playAnimation(this.IMAGES_HURT, 2);
             } else if (this.isAboveGround()) {
-                this.playAnimation(this.IMAGES_JUMPING, 10);
+                this.playAnimation(this.IMAGES_JUMPING, 3);
             } else {
                 if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                    this.playAnimation(this.IMAGES_WALKING, 10);
+                    this.playAnimation(this.IMAGES_WALKING, 2);
                 } else {
                     this.getIdleAnimation();
                 }
