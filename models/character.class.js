@@ -82,6 +82,7 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_IDLE);
         this.loadImages(this.IMAGES_LONG_IDLE);
         this.world = world;
+        this.lastThrowTime = 0;
         this.lastDamageTime = 0;
         this.applyGravity();
         this.animate();

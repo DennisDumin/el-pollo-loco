@@ -27,10 +27,14 @@ class World {
     }
 
     checkThrowableObjects() {
-        if (this.keyboard.THROW) {
-            let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
+        let now = Date.now();
+        let throwCooldown = 2000; 
+    
+        if (this.keyboard.THROW && now - this.character.lastThrowTime >= throwCooldown) {
+            let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 10);
             this.throwableObjects.push(bottle);
-        }
+            this.character.lastThrowTime = now;
+        } 
     }
 
     checkCollisions() {
