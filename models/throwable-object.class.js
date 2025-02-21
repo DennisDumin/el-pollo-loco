@@ -54,7 +54,7 @@ class ThrowableObject extends MovableObject {
     }
 
     handleGroundCollision() {
-        if (this.y >= 386) {
+        if (this.y >= 370) {
             console.log("💥 Flasche trifft auf den Boden!");
             this.speedY = 0;
             this.speedX = 0;
@@ -94,7 +94,8 @@ class ThrowableObject extends MovableObject {
                 this.img = this.imageCache[this.IMAGES_SPLASH[this.currentImage]]
                 this.currentImage++
             } else {
-                clearInterval(splashInterval)
+                clearInterval(splashInterval);
+                this.removeFromGame();
             }
         }, 100)
     }
