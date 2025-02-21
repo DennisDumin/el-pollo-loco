@@ -90,7 +90,6 @@ class Character extends MovableObject {
         this.offsetWidth = 65;
         this.offsetX = 30;
         this.offsetY = 93;
-        this.idleTime = null;
         this.walkSound.volume = 0.3;
         this.hurtSound.volume = 0.3;
         this.snoreSound.volume = 0.3;

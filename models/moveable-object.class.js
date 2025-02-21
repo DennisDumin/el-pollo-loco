@@ -9,6 +9,13 @@ class MovableObject extends DrawableObject {
     offsetHeight = 0;
     energy = 100;
     lastHit = 0;
+    idleTime = null;
+    breakSound = new Audio('audio/glass.mp3');
+
+    constructor() {
+        super();
+        this.idleTime = null;
+    }
 
     applyGravity() {
         setInterval(() => {
@@ -84,5 +91,17 @@ class MovableObject extends DrawableObject {
             width: this.offsetWidth,
             height: this.offsetHeight
         };
+    }
+
+    throw() {
+        this.applyGravity();
+        this.startBottleAnimation();
+        this.speedY = 10;
+        this.moveInterval = setInterval(() => {
+            this.x += 20;
+            if (this.y >= 0) {
+                this.handleGroundCollision();
+            }
+        }, 1000 / 25);
     }
 }

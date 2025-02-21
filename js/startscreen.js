@@ -1,4 +1,7 @@
+popSound = new Audio('audio/pop.mp3');
+
 function startGame() {
+    popSound.play();
     levelMusic.play();
     let startscreen = document.getElementById('startscreen');
     let canvas = document.getElementById('canvas');
@@ -12,18 +15,22 @@ function startGame() {
 }
 
 function openImprint() {
+    popSound.play();
     document.getElementById('imprintModal').style.display = 'flex';
 }
 
 function closeImprint() {
+    popSound.play();
     document.getElementById('imprintModal').style.display = 'none';
 }
 
 function openControls() {
+    popSound.play();
     document.getElementById('controlsModal').style.display = 'flex';
 }
 
 function closeControls() {
+    popSound.play();
     document.getElementById('controlsModal').style.display = 'none';
 }
 

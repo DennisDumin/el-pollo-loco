@@ -1,7 +1,5 @@
 class ThrowableObject extends MovableObject {
 
-    breakSound = new Audio('audio/glass.mp3');
-
     IMAGES_ROTATE = [
         'img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
         'img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
@@ -34,19 +32,6 @@ class ThrowableObject extends MovableObject {
         this.breakSound.volume = 0.3;
     }
 
-    throw() {
-        this.applyGravity();
-        this.startBottleAnimation();
-        this.speedY = 10;
-
-        this.moveInterval = setInterval(() => {
-            this.x += 20;
-            if (this.y >= 0) {
-                this.handleGroundCollision();
-            }
-        }, 1000 / 25);
-    }
-
     startBottleAnimation() {
         this.rotationInterval = setInterval(() => {
             this.playAnimation(this.IMAGES_ROTATE, 4)
@@ -58,7 +43,6 @@ class ThrowableObject extends MovableObject {
             console.log("💥 Flasche trifft auf den Boden!");
             this.speedY = 0;
             this.speedX = 0;
-            this.playBreakSound();
             this.playSplashAnimation();
         }
     }
@@ -67,10 +51,14 @@ class ThrowableObject extends MovableObject {
         this.world.level.enemies.forEach((enemy) => {
             if (this.isColliding(enemy)) {
                 console.log("🔥 Flasche trifft Gegner:", enemy);
-                this.y = this.y;
-                this.speedY = 0;
-                this.speedX = 0;
+                this.stopMotion();
                 this.playSplashAnimation();
+    
+                if (enemy instanceof Endboss) {
+                    enemy.takeDamage(20);
+                } else {
+                    enemy.hit();
+                }
             }
         });
     }
@@ -85,6 +73,7 @@ class ThrowableObject extends MovableObject {
     }
 
     playSplashAnimation() {
+        this.playBreakSound();
         this.stopMotion();
         this.speedY = 0;
         this.speedX = 0;
