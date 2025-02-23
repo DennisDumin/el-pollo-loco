@@ -52,7 +52,18 @@ class World {
         }
     }
 
+    checkCollisionWithBottle() {
+        console.log("🔍 checkCollisionWithBottle() läuft...");
+        this.level.bottles.forEach((bottle, index) => {
+            if (bottle instanceof Bottle && this.character.isColliding(bottle)) {
+                console.log("✅ Charakter berührt Flasche!", bottle);
+                this.handleBottlePickup(bottle, index);
+            }
+        });
+    }
+    
     checkCollisionWithCoin() {
+        console.log("🔍 checkCollisionWithCoin() läuft...");
         this.level.coins.forEach((coin, index) => {
             if (coin instanceof Coin && this.character.isColliding(coin)) {
                 console.log("✅ Charakter sammelt Coin!", coin);
@@ -61,23 +72,21 @@ class World {
         });
     }
 
-    checkCollisionWithBottle() {
-        this.level.bottles.forEach((bottle, index) => {
-            if (bottle instanceof Bottle && this.character.isColliding(bottle)) {
-                console.log("✅ Charakter berührt Flasche!", bottle);
-                this.handleBottlePickup(bottle, index);
-            }
-        });
-    }
-
     handleBottlePickup(bottle, index) {
+        console.log("🥤 handleBottlePickup() aufgerufen!", bottle);
         if (bottle instanceof Bottle) {
-            console.log("🥤 Flasche wird gesammelt: ", bottle);
             bottle.pickUpBottle();
             this.level.bottles.splice(index, 1);
             this.statusBarBottle.addBottles(1);
-        } else {
-            console.error("❌ Fehler: `bottle` ist kein Bottle-Objekt!", bottle);
+        }
+    }
+    
+    handleCoinPickup(coin, index) {
+        console.log("🪙 handleCoinPickup() aufgerufen!", coin);
+        if (coin instanceof Coin) {
+            coin.collect();
+            this.level.coins.splice(index, 1);
+            this.statusBarCoin.addCoins(1);
         }
     }
 
@@ -104,17 +113,6 @@ class World {
                     this.statusBarHealth.setPercentage(this.character.energy);
                 }
             });
-        }
-    }
-
-    handleCoinPickup(coin, index) {
-        if (coin instanceof Coin) {
-            console.log("🪙 Coin wird gesammelt: ", coin);
-            coin.collect();
-            this.level.coins.splice(index, 1);
-            this.statusBarCoin.addCoins(1);
-        } else {
-            console.error("❌ Fehler: `coin` ist kein Coin-Objekt!", coin);
         }
     }
 
