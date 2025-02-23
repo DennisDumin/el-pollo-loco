@@ -14,6 +14,11 @@ function initLevel() {
             new Coin(450, 100)
         ],
         [
+            new Bottle(100),
+            new Bottle(150),
+            new Bottle(170)
+        ],
+        [
             new Cloud()
         ],
 
