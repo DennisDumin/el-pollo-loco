@@ -55,17 +55,16 @@ class World {
     checkCollisionWithBottle() {
         console.log("🔍 checkCollisionWithBottle() läuft...");
         this.level.bottles.forEach((bottle, index) => {
-            if (bottle instanceof Bottle && this.character.isColliding(bottle)) {
+            if (this.character.isColliding(bottle)) {
                 console.log("✅ Charakter berührt Flasche!", bottle);
                 this.handleBottlePickup(bottle, index);
             }
         });
     }
-    
+
     checkCollisionWithCoin() {
-        console.log("🔍 checkCollisionWithCoin() läuft...");
         this.level.coins.forEach((coin, index) => {
-            if (coin instanceof Coin && this.character.isColliding(coin)) {
+            if (this.character.isColliding(coin)) {
                 console.log("✅ Charakter sammelt Coin!", coin);
                 this.handleCoinPickup(coin, index);
             }
@@ -73,21 +72,16 @@ class World {
     }
 
     handleBottlePickup(bottle, index) {
-        console.log("🥤 handleBottlePickup() aufgerufen!", bottle);
-        if (bottle instanceof Bottle) {
-            bottle.pickUpBottle();
-            this.level.bottles.splice(index, 1);
-            this.statusBarBottle.addBottles(1);
-        }
+        bottle.pickUpBottle();
+        this.level.bottles.splice(index, 1);
+        this.statusBarBottle.addBottles(1);
+
     }
-    
+
     handleCoinPickup(coin, index) {
-        console.log("🪙 handleCoinPickup() aufgerufen!", coin);
-        if (coin instanceof Coin) {
-            coin.collect();
-            this.level.coins.splice(index, 1);
-            this.statusBarCoin.addCoins(1);
-        }
+        coin.collect();
+        this.level.coins.splice(index, 1);
+        this.statusBarCoin.addCoins(1);
     }
 
     checkEnemyCollisions() {
@@ -203,13 +197,13 @@ class World {
             console.warn('addObjectsToMap: objects is undefined or not an array', objects);
             return;
         }
-    
+
         objects.forEach(o => {
             if (!o || !o.img || !o.img.src) {
                 console.warn('Skipping invalid object in addObjectsToMap:', o);
                 return;
             }
-    
+
             try {
                 this.addToMap(o);
             } catch (error) {

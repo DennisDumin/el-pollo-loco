@@ -2,25 +2,24 @@ let level1;
 
 function initLevel() {
     level1 = new Level(
-        [
-            new Chicken(),
-            new Chicken(),
-            new Chicken(),
-            new Endboss()
-        ],
-        [
-            new Coin(250, 150),
-            new Coin(400, 50),
-            new Coin(450, 100)
-        ],
-        [
-            new Bottle(100),
-            new Bottle(150),
-            new Bottle(170)
-        ],
-        [
-            new Cloud()
-        ],
+
+        [new Bottle(100),
+        new Bottle(150),
+        new Bottle(90),
+        new Bottle(80),
+        new Bottle(70),
+        new Bottle(170)],
+
+        [new Chicken(),
+        new Chicken(),
+        new Chicken(),
+        new Endboss()],
+
+        [new Coin(250, 150),
+        new Coin(400, 50),
+        new Coin(450, 100)],
+
+        [new Cloud()],
 
         generateBackground()
     );
