@@ -8,6 +8,7 @@ class Character extends MovableObject {
     walkSound = new Audio('audio/running.mp3');
     hurtSound = new Audio('audio/hurt.mp3');
     snoreSound = new Audio('audio/snore.mp3');
+    bottlesCollected = 0; 
 
     IMAGES_WALKING = [
         'img/2_character_pepe/2_walk/W-21.png',

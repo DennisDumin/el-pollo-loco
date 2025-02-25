@@ -43,14 +43,18 @@ class World {
     checkThrowableObjects() {
         let now = Date.now();
         let throwCooldown = 2000;
-
         if (this.keyboard.THROW && now - this.character.lastThrowTime >= throwCooldown) {
-            let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 10);
-            this.throwableObjects.push(bottle);
-            this.character.lastThrowTime = now;
-            this.character.idleTime = null;
-        }
+            if (this.character.bottlesCollected > 0) {
+                let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 10);
+                this.throwableObjects.push(bottle);
+                this.character.lastThrowTime = now;
+                this.character.idleTime = null;
+                this.character.bottlesCollected--;
+                this.statusBarBottle.removeBottle();
+            }
+        };
     }
+
 
     checkCollisionWithBottle() {
         console.log("🔍 checkCollisionWithBottle() läuft...");
@@ -74,8 +78,8 @@ class World {
     handleBottlePickup(bottle, index) {
         bottle.pickUpBottle();
         this.level.bottles.splice(index, 1);
-        this.statusBarBottle.addBottles(1);
-
+        this.character.bottlesCollected++;
+        this.statusBarBottle.addBottles(this.character.bottlesCollected);
     }
 
     handleCoinPickup(coin, index) {
