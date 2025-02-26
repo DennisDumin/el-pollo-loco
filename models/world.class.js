@@ -8,6 +8,7 @@ class World {
     statusBarHealth = new StatusBarHealth();
     statusBarCoin = new StatusBarCoin();
     statusBarBottle = new StatusBarBottle();
+    statusBarEndboss = new StatusBarEndboss();
     throwableObjects = [];
 
     constructor(canvas, keyboard) {
@@ -100,19 +101,46 @@ class World {
                 }
             });
         });
-
+    
         let jumpedOnEnemy = this.checkJumpOnEnemy();
-
+    
         if (!jumpedOnEnemy) {
             this.level.enemies.forEach((enemy) => {
                 if (!enemy.isDead && this.character.isColliding(enemy) && !this.character.isHurt() && !this.isJumpingOnEnemy(enemy)) {
-                    console.log("💥 Charakter nimmt Schaden von einem Gegner!");
-                    this.character.hit();
-                    this.statusBarHealth.setPercentage(this.character.energy);
+                    
+                    if (enemy instanceof Endboss) {
+                        console.log("⚔️ Charakter berührt den Endboss!");
+                        this.character.hit(); 
+                        this.statusBarHealth.setPercentage(this.character.energy);
+                    } else {
+                        console.log("💥 Charakter nimmt Schaden von einem Gegner!");
+                        this.character.hit();
+                        this.statusBarHealth.setPercentage(this.character.energy);
+                    }
                 }
             });
         }
     }
+
+    handleEndbossHit(bottle, bottleIndex, endboss) {
+        if (!endboss.isDead && this.throwableObjects[bottleIndex]) {  
+            console.log("💀 Flasche trifft Endboss!");
+            endboss.takeDamage(20); 
+            console.log("🔄 Endboss-HP nach Treffer:", endboss.energy); 
+            this.statusBarEndboss.setPercentage(endboss.energy); 
+            this.throwableObjects[bottleIndex].stopMotion();
+            this.throwableObjects[bottleIndex].playSplashAnimation();
+            let hitBottle = this.throwableObjects[bottleIndex];
+            this.throwableObjects.splice(bottleIndex, 1);
+            console.log("🧴 Flasche entfernt nach Treffer!", hitBottle);
+            if (endboss.energy <= 0) {
+                endboss.die();
+                console.log("🎉 Endboss wurde besiegt!");
+            }
+        }
+    }
+    
+    
 
     checkJumpOnEnemy() {
         let jumpedOnEnemy = false;
@@ -183,6 +211,7 @@ class World {
         this.ctx.translate(-this.camera_x, 0);
         this.addToMap(this.statusBarBottle);
         this.ctx.translate(this.camera_x, 0);
+        this.addToMap(this.statusBarEndboss);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.level.bottles);
         this.addObjectsToMap(this.level.clouds);

@@ -2,6 +2,9 @@ class Endboss extends MovableObject {
     height = 400;
     width = 350;
     y = 55;
+    energy = 100;
+    isDead = false;
+    lastHit = 0;
 
     IMAGES_ALERT = [
         'img/4_enemie_boss_chicken/2_alert/G5.png',
@@ -29,5 +32,31 @@ class Endboss extends MovableObject {
         setInterval(() => {
             this.playAnimation(this.IMAGES_ALERT, 2);
         }, 170);
+    }
+    takeDamage(amount) {
+        let now = Date.now();
+    
+        if (!this.isDead && now - this.lastHit > 500) {  
+            this.energy = Math.max(0, this.energy - amount);
+            this.lastHit = now;
+    
+            console.log(`🔥 Endboss getroffen! Verbleibende HP: ${this.energy}`);
+    
+            if (this.energy === 0) {
+                this.die();
+            }
+        } else {
+            console.log("🛡️ Endboss hat noch Cooldown, kein weiterer Schaden!");
+        }
+    }
+
+    die() {
+        console.log("☠️ Der Endboss ist besiegt!");
+        this.isDead = true;
+        this.playDeathAnimation();
+    }
+
+    playDeathAnimation() {
+        console.log("💀 Endboss stirbt und verschwindet...");
     }
 }
