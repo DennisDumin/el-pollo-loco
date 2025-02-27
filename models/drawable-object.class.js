@@ -25,7 +25,7 @@ class DrawableObject {
     }
 
     drawFrame(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof ThrowableObject) {
+        if (this instanceof Character || this instanceof Chicken || this instanceof ChickenTiny || this instanceof Endboss || this instanceof ThrowableObject) {
             const { x, y, width, height } = this.getHitbox();
 
             ctx.beginPath();

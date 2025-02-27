@@ -56,6 +56,8 @@ class ThrowableObject extends MovableObject {
     
                 if (enemy instanceof Endboss) {
                     enemy.takeDamage(20);
+                    this.world.statusBarEndboss.setPercentage(enemy.energy);
+                
                 } else {
                     enemy.hit();
                 }
@@ -77,17 +79,19 @@ class ThrowableObject extends MovableObject {
         this.stopMotion();
         this.speedY = 0;
         this.speedX = 0;
-        this.currentImage = 0
+        this.currentImage = 0;
+        this.collisionDetected = true; 
         const splashInterval = setInterval(() => {
             if (this.currentImage < this.IMAGES_SPLASH.length) {
-                this.img = this.imageCache[this.IMAGES_SPLASH[this.currentImage]]
-                this.currentImage++
+                this.img = this.imageCache[this.IMAGES_SPLASH[this.currentImage]];
+                this.currentImage++;
             } else {
                 clearInterval(splashInterval);
                 this.removeFromGame();
             }
-        }, 100)
+        }, 100);
     }
+    
 
     removeFromGame() {
         let index = world.throwableObjects.indexOf(this);

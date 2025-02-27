@@ -123,31 +123,38 @@ class World {
     }
 
     handleEndbossHit(bottle, bottleIndex, endboss) {
-        if (!endboss.isDead && this.throwableObjects[bottleIndex]) {  
+        if (!endboss.isDead && this.throwableObjects[bottleIndex] && !bottle.collisionDetected) {  
             console.log("💀 Flasche trifft Endboss!");
-            endboss.takeDamage(20); 
-            console.log("🔄 Endboss-HP nach Treffer:", endboss.energy); 
-            this.statusBarEndboss.setPercentage(endboss.energy); 
+            bottle.collisionDetected = true;  
+            if (Date.now() - endboss.lastHit > 500) {
+                endboss.takeDamage(20);
+                this.statusBarEndboss.setPercentage(endboss.energy);
+                endboss.lastHit = Date.now(); 
+            } else {
+                console.log("🛡️ Endboss hat noch Cooldown, kein weiterer Schaden!");
+            }
+    
             this.throwableObjects[bottleIndex].stopMotion();
             this.throwableObjects[bottleIndex].playSplashAnimation();
-            let hitBottle = this.throwableObjects[bottleIndex];
-            this.throwableObjects.splice(bottleIndex, 1);
-            console.log("🧴 Flasche entfernt nach Treffer!", hitBottle);
+            
+            setTimeout(() => {
+                this.throwableObjects.splice(bottleIndex, 1);
+                console.log("🧴 Flasche entfernt nach Treffer!");
+            }, 100);
+            
             if (endboss.energy <= 0) {
                 endboss.die();
                 console.log("🎉 Endboss wurde besiegt!");
             }
         }
     }
-    
-    
 
     checkJumpOnEnemy() {
         let jumpedOnEnemy = false;
         this.level.enemies.forEach((enemy) => {
             if (!enemy.isDead && this.isJumpingOnEnemy(enemy) && this.character.isColliding(enemy)) {
-                if (enemy instanceof Chicken) {
-                    console.log("🐔 Charakter springt auf Chicken!");
+                if (enemy instanceof Chicken || enemy instanceof ChickenTiny) {
+                    console.log(`🐔 Charakter springt auf ${enemy instanceof ChickenTiny ? "Tiny Chicken" : "Chicken"}!`);
                     enemy.hit();
                     enemy.stopMotion();
                     this.character.speedY = 20;
@@ -157,6 +164,7 @@ class World {
         });
         return jumpedOnEnemy;
     }
+    
 
     isJumpingOnEnemy(enemy) {
         return this.character.y + this.character.height >= enemy.y &&

@@ -33,20 +33,19 @@ class Endboss extends MovableObject {
             this.playAnimation(this.IMAGES_ALERT, 2);
         }, 170);
     }
+
     takeDamage(amount) {
-        let now = Date.now();
+        if (this.isHurt() || this.energy === 0) return;
     
-        if (!this.isDead && now - this.lastHit > 500) {  
-            this.energy = Math.max(0, this.energy - amount);
-            this.lastHit = now;
+        this.energy = Math.max(0, this.energy - amount);
+        this.lastHit = Date.now();
+        
+        console.log(`🔥 Endboss getroffen! Verbleibende HP: ${this.energy}`);
     
-            console.log(`🔥 Endboss getroffen! Verbleibende HP: ${this.energy}`);
+        this.world.statusBarEndboss.setPercentage(this.energy);
     
-            if (this.energy === 0) {
-                this.die();
-            }
-        } else {
-            console.log("🛡️ Endboss hat noch Cooldown, kein weiterer Schaden!");
+        if (this.energy === 0) {
+            this.die();
         }
     }
 

@@ -13,6 +13,9 @@ function initLevel() {
         [new Chicken(),
         new Chicken(),
         new Chicken(),
+        new ChickenTiny(),
+        new ChickenTiny(),
+        new ChickenTiny(),
         new Endboss()],
 
         [new Coin(250, 150),

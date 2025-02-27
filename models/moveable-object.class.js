@@ -34,7 +34,7 @@ class MovableObject extends DrawableObject {
     }
 
     isHurt() {
-        return (Date.now() - this.lastHit) < 1500;
+        return (Date.now() - this.lastHit) < 1000;
     }
 
     isDead() {
