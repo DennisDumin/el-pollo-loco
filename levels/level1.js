@@ -19,7 +19,11 @@ function initLevel() {
         new Endboss()],
 
         [new Coin(250, 150),
-        new Coin(400, 50),
+        new Coin(550, 150),
+        new Coin(650, 150),
+        new Coin(700, 150),
+        new Coin(600, 150),
+        new Coin(500, 150),
         new Coin(450, 100)],
 
         [new Cloud()],

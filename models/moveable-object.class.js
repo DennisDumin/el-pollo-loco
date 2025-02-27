@@ -29,7 +29,7 @@ class MovableObject extends DrawableObject {
     hit() {
         if (this.energy === 0 || (Date.now() - this.lastHit) <= 500) return;
         
-        this.energy = Math.max(0, this.energy - 10);
+        this.energy = Math.max(0, this.energy - 20);
         this.lastHit = Date.now();
     }
 

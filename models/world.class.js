@@ -5,6 +5,7 @@ class World {
     canvas;
     ctx;
     camera_x = 0;
+    collectSound = new Audio('audio/bottle.mp3');
     statusBarHealth = new StatusBarHealth();
     statusBarCoin = new StatusBarCoin();
     statusBarBottle = new StatusBarBottle();
@@ -38,7 +39,16 @@ class World {
             this.checkThrowableObjects();
             this.checkCollisionWithBottle();
             this.checkEnemyCollisions();
+            this.checkEndbossActivation();
         }, 1000 / 60);
+    }
+
+    checkEndbossActivation() {
+        this.level.enemies.forEach((enemy) => {
+            if (enemy instanceof Endboss) {
+                enemy.checkActivation(this.character.x);
+            }
+        });
     }
 
     checkThrowableObjects() {
@@ -58,10 +68,8 @@ class World {
 
 
     checkCollisionWithBottle() {
-        console.log("🔍 checkCollisionWithBottle() läuft...");
         this.level.bottles.forEach((bottle, index) => {
             if (this.character.isColliding(bottle)) {
-                console.log("✅ Charakter berührt Flasche!", bottle);
                 this.handleBottlePickup(bottle, index);
             }
         });
@@ -87,6 +95,13 @@ class World {
         coin.collect();
         this.level.coins.splice(index, 1);
         this.statusBarCoin.addCoins(1);
+        if (this.statusBarCoin.currentCoins >= 5) {
+            this.character.bottlesCollected++;
+            this.statusBarBottle.addBottles();
+            this.collectSound.play();
+            this.statusBarCoin.currentCoins = 0;
+            this.statusBarCoin.setPercentage(0);
+        }
     }
 
     checkEnemyCollisions() {
@@ -150,12 +165,6 @@ class World {
     }
 
     checkJumpOnEnemy() {
-        this.level.enemies.forEach((enemy) => {
-            console.log(`🔍 Prüfe Sprung-Kollision mit ${enemy instanceof ChickenTiny ? "Tiny Chicken" : "Chicken"}`);
-            console.log(`➡️ Character Y: ${this.character.y}, Height: ${this.character.height}`);
-            console.log(`➡️ Enemy Y: ${enemy.y}, Height: ${enemy.height}`);
-            console.log(`🎯 Trefferprüfung: ${this.isJumpingOnEnemy(enemy)}`);
-        });
         let jumpedOnEnemy = false;
         this.level.enemies.forEach((enemy) => {
             if (!enemy.isDead && this.isJumpingOnEnemy(enemy) && this.character.isColliding(enemy)) {
@@ -200,7 +209,6 @@ class World {
 
     handleEndbossHit(bottle, bottleIndex, endboss) {
         if (!endboss.isDead) {
-            console.log("💀 Flasche trifft Endboss!");
             endboss.takeDamage(20);
             this.throwableObjects[bottleIndex].stopMotion();
             this.throwableObjects[bottleIndex].playSplashAnimation();
@@ -208,7 +216,6 @@ class World {
             if (endboss.energy <= 0) {
                 endboss.die();
             }
-
             setTimeout(() => {
                 this.throwableObjects.splice(bottleIndex, 1);
             }, 500);
@@ -219,6 +226,7 @@ class World {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToMap(this.level.backgroundLayer);
+        this.addObjectsToMap(this.level.clouds);
         this.ctx.translate(-this.camera_x, 0);
         this.addToMap(this.statusBarHealth);
         this.ctx.translate(this.camera_x, 0);
@@ -231,7 +239,6 @@ class World {
         this.addToMap(this.statusBarEndboss);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.level.bottles);
-        this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.throwableObjects);
         this.addToMap(this.character);
@@ -284,5 +291,13 @@ class World {
     flipImageBack(mo) {
         mo.x = mo.x * -1;
         this.ctx.restore();
+    }
+
+    endGame() {
+        console.log("🎉 Spiel gewonnen! 🏆");
+        setTimeout(() => {
+            alert("Du hast das Spiel gewonnen! 🎉");
+            location.reload(); // Spiel neu starten
+        }, 2000);
     }
 }
