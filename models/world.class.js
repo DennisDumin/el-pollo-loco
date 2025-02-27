@@ -150,6 +150,12 @@ class World {
     }
 
     checkJumpOnEnemy() {
+        this.level.enemies.forEach((enemy) => {
+            console.log(`🔍 Prüfe Sprung-Kollision mit ${enemy instanceof ChickenTiny ? "Tiny Chicken" : "Chicken"}`);
+            console.log(`➡️ Character Y: ${this.character.y}, Height: ${this.character.height}`);
+            console.log(`➡️ Enemy Y: ${enemy.y}, Height: ${enemy.height}`);
+            console.log(`🎯 Trefferprüfung: ${this.isJumpingOnEnemy(enemy)}`);
+        });
         let jumpedOnEnemy = false;
         this.level.enemies.forEach((enemy) => {
             if (!enemy.isDead && this.isJumpingOnEnemy(enemy) && this.character.isColliding(enemy)) {
@@ -164,14 +170,17 @@ class World {
         });
         return jumpedOnEnemy;
     }
-    
 
     isJumpingOnEnemy(enemy) {
-        return this.character.y + this.character.height >= enemy.y &&
-            this.character.y + this.character.height <= enemy.y + enemy.height / 2 &&
-            this.character.speedY < 0;
+        let characterBottom = this.character.y + this.character.height;
+        let enemyTop = enemy.y;
+        let jumpThreshold = enemy instanceof ChickenTiny ? enemy.height * 0.8 : enemy.height * 0.5;  
+        return (
+            characterBottom >= enemyTop &&  
+            characterBottom <= enemyTop + jumpThreshold && 
+            this.character.speedY < 0 
+        );
     }
-
 
     handleChickenHit(bottle, bottleIndex, chicken) {
         if (!chicken.isDead) {
