@@ -86,11 +86,13 @@ class Endboss extends MovableObject {
             if (this.isDead) return;
 
             if (!this.isActivated) {
-                this.playAnimation(this.IMAGES_ALERT, 1);
+                this.playAnimation(this.IMAGES_ALERT, 2);
             } else if (this.isHurt) {
-                this.playAnimation(this.IMAGES_HURT, 1);
+                this.playAnimation(this.IMAGES_HURT, 2);
             } else if (this.isAttacking) {
-                this.playAnimation(this.IMAGES_ATTACK, 1);
+                this.playAnimation(this.IMAGES_ATTACK, 2);
+            } else if (this.isActivated && !this.hasStartedMoving) {
+                return;
             } else {
                 this.playAnimation(this.IMAGES_WALKING, 2);
                 this.moveLeft();
@@ -111,6 +113,26 @@ class Endboss extends MovableObject {
         }
     }
 
+    startAlertSequence() {
+        console.log("🚨 Endboss spielt Alarm-Sound und zeigt Alert-Animation!");
+        levelMusic.pause();
+        this.alarmSound.play();
+
+        this.playAnimation(this.IMAGES_ALERT, 2);
+
+        this.alarmSound.onended = () => {
+            console.log("🎵 Level-Musik wird fortgesetzt...");
+            levelMusic.play();
+
+            setTimeout(() => {
+                console.log("🐔 Endboss beginnt nach 2 Sekunden zu laufen!");
+                this.hasStartedMoving = true;
+                this.startMoving();
+                this.startAttackSequence();
+            }, 1000);
+        };
+    }
+
     takeDamage(amount) {
         if (this.isHurt || this.energy === 0) return;
 
@@ -118,7 +140,7 @@ class Endboss extends MovableObject {
         this.lastHit = Date.now();
         this.isHurt = true;
         this.isAttacking = false;
-        this.speed = 0; 
+        this.speed = 0;
 
         console.log(`🔥 Endboss getroffen! Verbleibende HP: ${this.energy}`);
 
@@ -141,30 +163,30 @@ class Endboss extends MovableObject {
         console.log("⚔️ Endboss startet Angriff!");
         this.isAttacking = true;
         this.speed = 0;
-            this.speedY = this.attackJumpHeight; 
-            this.speed = this.attackSpeed; 
-            this.playAnimation(this.IMAGES_ATTACK, 1);
-            let attackStartX = this.x;
-            let attackInterval = setInterval(() => {
-                this.x -= this.speed;
-                if (Math.abs(this.x - attackStartX) > this.attackDistance) {
-                    clearInterval(attackInterval);
-                    this.stopAttack();
-                }
-            }, 2000 / 60);
+        this.speedY = this.attackJumpHeight;
+        this.speed = this.attackSpeed;
+        this.playAnimation(this.IMAGES_ATTACK, 1);
+        let attackStartX = this.x;
+        let attackInterval = setInterval(() => {
+            this.x -= this.speed;
+            if (Math.abs(this.x - attackStartX) > this.attackDistance) {
+                clearInterval(attackInterval);
+                this.stopAttack();
+            }
+        }, 2000 / 60);
     }
 
     stopAttack() {
         console.log("⏹️ Endboss beendet Angriff.");
         this.isAttacking = false;
-        this.speed = 2; 
+        this.speed = 2;
         this.playAnimation(this.IMAGES_WALKING, 2);
     }
 
     die() {
         console.log("☠️ Der Endboss ist besiegt!");
         this.isDead = true;
-        this.speed = 0; 
+        this.speed = 0;
         this.playAnimation(this.IMAGES_DEAD, 1);
 
         setTimeout(() => {

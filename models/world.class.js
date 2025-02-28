@@ -20,6 +20,7 @@ class World {
         this.draw();
         this.setWorld();
         this.run();
+        this.endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
     }
 
     setWorld() {
@@ -44,14 +45,27 @@ class World {
     }
 
     checkEndbossActivation() {
-        this.level.enemies.forEach((enemy) => {
-            if (enemy instanceof Endboss) {
-                enemy.checkActivation(this.character.x);
-            }
-        });
+        let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
+        
+        if (endboss && this.character.x > 1400 && !endboss.isActivated) {
+            console.log("🚨 Endboss erscheint, Charakter wird eingefroren!");
+    
+            endboss.isActivated = true;
+            endboss.startAlertSequence();
+    
+            this.statusBarEndboss.setPercentage(100);
+            this.statusBarEndboss.visible = true;
+    
+            this.character.isFrozen = true;
+            setTimeout(() => {
+                console.log("✅ Charakter kann sich wieder bewegen!");
+                this.character.isFrozen = false;
+            }, 2000);
+        }
     }
 
     checkThrowableObjects() {
+        if (this.character.isFrozen) return;
         let now = Date.now();
         let throwCooldown = 2000;
         if (this.keyboard.THROW && now - this.character.lastThrowTime >= throwCooldown) {
@@ -297,7 +311,7 @@ class World {
         console.log("🎉 Spiel gewonnen! 🏆");
         setTimeout(() => {
             alert("Du hast das Spiel gewonnen! 🎉");
-            location.reload(); // Spiel neu starten
+            location.reload();
         }, 2000);
     }
 }

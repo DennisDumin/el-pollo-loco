@@ -8,7 +8,8 @@ class Character extends MovableObject {
     walkSound = new Audio('audio/running.mp3');
     hurtSound = new Audio('audio/hurt.mp3');
     snoreSound = new Audio('audio/snore.mp3');
-    bottlesCollected = 0; 
+    bottlesCollected = 0;
+    isFrozen = false;
 
     IMAGES_WALKING = [
         'img/2_character_pepe/2_walk/W-21.png',
@@ -94,10 +95,14 @@ class Character extends MovableObject {
         this.walkSound.volume = 0.3;
         this.hurtSound.volume = 0.3;
         this.snoreSound.volume = 0.3;
-        }
+    }
 
     animate() {
         setInterval(() => {
+            if (this.isFrozen) {
+                return;
+            }
+    
             if (this.world.keyboard.RIGHT && this.x < this.world.level.levelEndX) {
                 this.moveRight();
                 this.otherDirection = false;
@@ -123,8 +128,11 @@ class Character extends MovableObject {
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD, 2);
             } else if (this.isHurt()) {
-                this.hurtSound.play();
-                this.idleTime = null
+                if (!this.hurtSoundPlayed) {
+                    this.hurtSound.play();
+                    this.hurtSoundPlayed = true;
+                }
+                this.idleTime = null;
                 this.snoreSound.pause();
                 this.playAnimation(this.IMAGES_HURT, 2);
             } else if (this.isAboveGround()) {
@@ -140,6 +148,7 @@ class Character extends MovableObject {
     }
 
     jump() {
+        if (this.isFrozen) return; 
         this.speedY = 25;
     }
 

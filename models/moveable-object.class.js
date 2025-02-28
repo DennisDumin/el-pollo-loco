@@ -31,6 +31,7 @@ class MovableObject extends DrawableObject {
         
         this.energy = Math.max(0, this.energy - 20);
         this.lastHit = Date.now();
+        this.hurtSoundPlayed = false;
     }
 
     isHurt() {
@@ -50,10 +51,12 @@ class MovableObject extends DrawableObject {
     }
 
     moveRight() {
+        if (this.isFrozen) return; 
         this.x += this.speed;
     }
-
+    
     moveLeft() {
+        if (this.isFrozen) return;  
         this.x -= this.speed;
     }
 
@@ -94,6 +97,7 @@ class MovableObject extends DrawableObject {
     }
 
     throw() {
+        if (this.isFrozen) return;
         this.applyGravity();
         this.startBottleAnimation();
         this.speedY = 10;
