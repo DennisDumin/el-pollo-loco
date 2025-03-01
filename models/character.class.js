@@ -98,16 +98,14 @@ class Character extends MovableObject {
     }
 
     animate() {
-        setInterval(() => {
-            if (this.isFrozen) {
-                return;
-            }
+        this.movementInterval = setGameInterval(() => {
+            if (this.isFrozen) return;
     
             if (this.world.keyboard.RIGHT && this.x < this.world.level.levelEndX) {
                 this.moveRight();
                 this.otherDirection = false;
                 this.snoreSound.pause();
-                this.idleTime = null
+                this.idleTime = null;
             }
             if (this.world.keyboard.LEFT && this.x > -200) {
                 this.moveLeft();
@@ -118,13 +116,13 @@ class Character extends MovableObject {
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.jump();
                 this.snoreSound.pause();
-                this.idleTime = null
+                this.idleTime = null;
             }
 
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
 
-        setInterval(() => {
+        this.animationInterval = setGameInterval(() => {
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD, 2);
             } else if (this.isHurt()) {
@@ -145,6 +143,11 @@ class Character extends MovableObject {
                 }
             }
         }, 50);
+    }
+
+    stopCharacter() {
+        clearGameInterval(this.movementInterval);
+        clearGameInterval(this.animationInterval);
     }
 
     jump() {

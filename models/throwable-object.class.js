@@ -36,9 +36,9 @@ class ThrowableObject extends MovableObject {
     }
 
     startBottleAnimation() {
-        this.rotationInterval = setInterval(() => {
-            this.playAnimation(this.IMAGES_ROTATE, 4)
-        }, 1000 / 60)
+        this.rotationInterval = setGameInterval(() => {
+            this.playAnimation(this.IMAGES_ROTATE, 4);
+        }, 1000 / 60);
     }
 
     handleGroundCollision() {
@@ -73,6 +73,7 @@ class ThrowableObject extends MovableObject {
     stopMotion() {
         clearInterval(this.moveInterval);
         clearInterval(this.rotationInterval);
+        clearInterval(this.splashInterval); 
     }
 
     playSplashAnimation() {
@@ -81,19 +82,18 @@ class ThrowableObject extends MovableObject {
         this.speedY = 0;
         this.speedX = 0;
         this.currentImage = 0;
-        this.collisionDetected = true; 
-        const splashInterval = setInterval(() => {
+        this.collisionDetected = true;
+        this.splashInterval = setGameInterval(() => {
             if (this.currentImage < this.IMAGES_SPLASH.length) {
                 this.img = this.imageCache[this.IMAGES_SPLASH[this.currentImage]];
                 this.currentImage++;
             } else {
-                clearInterval(splashInterval);
+                clearInterval(this.splashInterval);
                 this.removeFromGame();
             }
         }, 100);
     }
     
-
     removeFromGame() {
         let index = world.throwableObjects.indexOf(this);
         if (index > -1) {

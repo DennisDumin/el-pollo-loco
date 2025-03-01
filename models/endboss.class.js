@@ -73,7 +73,7 @@ class Endboss extends MovableObject {
     }
 
     applyGravity() {
-        setInterval(() => {
+        this.gravityInterval = setGameInterval(() => {
             if (this.y < 55 || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
@@ -82,9 +82,8 @@ class Endboss extends MovableObject {
     }
 
     animate() {
-        setInterval(() => {
+        this.animationInterval = setGameInterval(() => {
             if (this.isDead) return;
-
             if (!this.isActivated) {
                 this.playAnimation(this.IMAGES_ALERT, 2);
             } else if (this.isHurt) {
@@ -96,10 +95,10 @@ class Endboss extends MovableObject {
             } else {
                 this.playAnimation(this.IMAGES_WALKING, 2);
                 if (this.world.character.x < this.x) {
-                    this.otherDirection = false; // 🔄 Schaut nach links
+                    this.otherDirection = false;
                     this.moveLeft();
                 } else {
-                    this.otherDirection = true; // 🔄 Schaut nach rechts
+                    this.otherDirection = true; 
                     this.moveRight();
                 }
             }
@@ -124,15 +123,14 @@ class Endboss extends MovableObject {
         this.alarmSound.play();
         this.world.character.isFrozen = true;
         let alertIndex = 0;
-        let alertInterval = setInterval(() => {
+        this.alertInterval = setGameInterval(() => {
             if (alertIndex < this.IMAGES_ALERT.length) {
                 this.img = this.imageCache[this.IMAGES_ALERT[alertIndex]];
                 alertIndex++;
             } else {
-                clearInterval(alertInterval);
+                clearInterval(this.alertInterval);
             }
         }, 400);
-
         this.alarmSound.onended = () => {
             console.log("🎵 Level-Musik wird fortgesetzt...");
             levelMusic.play();
@@ -174,15 +172,14 @@ class Endboss extends MovableObject {
         }
         this.playAnimation(this.IMAGES_ATTACK, 1);
         let attackStartX = this.x;
-        let attackInterval = setInterval(() => {
+        this.attackInterval = setGameInterval(() => {
             if (this.otherDirection) {
                 this.x += this.speed; 
             } else {
                 this.x -= this.speed;
             }
-    
             if (Math.abs(this.x - attackStartX) > this.attackDistance) {
-                clearInterval(attackInterval);
+                clearInterval(this.attackInterval);
                 this.stopAttack();
             }
         }, 2000 / 60);
@@ -201,12 +198,12 @@ class Endboss extends MovableObject {
         this.isDead = true;
         this.speed = 0; 
         let deathIndex = 0;
-        let deathInterval = setInterval(() => {
+        this.deathInterval = setGameInterval(() => {
             if (deathIndex < this.IMAGES_DEAD.length) {
                 this.img = this.imageCache[this.IMAGES_DEAD[deathIndex]]; 
                 deathIndex++;
             } else {
-                clearInterval(deathInterval); 
+                clearInterval(this.deathInterval); 
             }
         }, 400);
         this.world.freezeGame(); 

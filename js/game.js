@@ -4,6 +4,7 @@ let levelMusic = new Audio('audio/music.mp3');
 levelMusic.loop = true;
 levelMusic.volume = 0.3;
 let keyboard = new Keyboard();
+let gameIntervals = [];
 
 function init() {
     canvas = document.getElementById('canvas');
@@ -27,11 +28,38 @@ function handleKeyEvent(e, state) {
 }
 
 function restartGame() {
-    location.reload(); 
+    console.log("🔄 Neues Spiel wird gestartet...");
+    clearAllGameIntervals();
+    world = null;
+    level1 = null;
+    let winScreen = document.getElementById('win-menu');
+    if (winScreen) winScreen.remove();
+    initLevel();
+    world = new World(canvas, keyboard);
+    
+    console.log("✅ Neues Spiel gestartet!");
+}
+
+function setGameInterval(callback, time) {
+    let interval = setInterval(callback, time);
+    gameIntervals.push(interval);
+    return interval;
+}
+
+function clearAllGameIntervals() {
+    gameIntervals.forEach(clearInterval);
+    gameIntervals = [];
+    console.log("⏹️ Alle Spiel-Intervalle wurden gestoppt!");
 }
 
 function goToMenu() {
-    window.location.href = "index.html";
+    console.log("📜 Zurück ins Menü...");
+    clearAllGameIntervals();
+    let winScreen = document.getElementById('win-menu');
+    if (winScreen) winScreen.remove();
+    let startscreen = document.getElementById('startscreen');
+    if (startscreen) startscreen.style.display = 'block';
+    if (canvas) canvas.style.display = 'none';
 }
 
 window.addEventListener("keydown", (e) => handleKeyEvent(e, true));

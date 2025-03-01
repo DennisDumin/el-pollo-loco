@@ -36,7 +36,7 @@ class World {
     }
 
     run() {
-        setInterval(() => {
+        this.gameLoop = setGameInterval(() => {
             this.checkCollisionWithCoin();
             this.checkThrowableObjects();
             this.checkCollisionWithBottle();

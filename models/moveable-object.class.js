@@ -18,7 +18,7 @@ class MovableObject extends DrawableObject {
     }
 
     applyGravity() {
-        setInterval(() => {
+        this.gravityInterval = setGameInterval(() => {
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
@@ -100,7 +100,7 @@ class MovableObject extends DrawableObject {
         this.idleTime = null;
         this.applyGravity(); 
         this.startBottleAnimation();
-        this.moveInterval = setInterval(() => {
+        this.moveInterval = setGameInterval(() => {
             this.x += this.speedX;
             this.y -= this.speedY;  
             this.speedY -= (this.acceleration - 2.5); 
@@ -109,4 +109,23 @@ class MovableObject extends DrawableObject {
             }
         }, 1000 / 60);
     }
+
+    animateChicken() {
+        this.moveInterval = setGameInterval(() => {
+            if (!this.isDead) {
+                this.moveLeft();
+            }
+        }, 1000 / 60);
+
+        this.animationInterval = setGameInterval(() => {
+            if (!this.isDead) {
+                this.playAnimation(this.IMAGES_WALKING, 2);
+            }
+        }, 100);
+    }
+
+    stopMotion() {
+        clearInterval(this.moveInterval);
+        clearInterval(this.animationInterval);
+    }    
 }

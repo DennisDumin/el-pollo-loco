@@ -34,7 +34,7 @@ class Coin extends MovableObject {
     }
 
     startFloating() {
-        setInterval(() => {
+        this.floatingInterval = setGameInterval(() => {
             this.y += this.floatingParams.direction * this.floatingParams.speed;
             if (
                 this.y > this.floatingParams.baseY + this.floatingParams.range ||
@@ -44,9 +44,9 @@ class Coin extends MovableObject {
             }
         }, 1000 / 60);
     }
-
+    
     animate() {
-        setInterval(() => {
+        this.animationInterval = setGameInterval(() => {
             this.playAnimation(this.IMAGES_COIN);
         }, 500);
     }

@@ -18,7 +18,7 @@ class Chicken extends MovableObject {
         this.loadImage(this.IMAGE_DEAD);
         this.x = 300 + Math.random() * 500;
         this.speed = 0.15 + Math.random() * 0.5;
-        this.animate();
+        this.animateChicken();
         this.offsetHeight = 65;
         this.offsetWidth = 65;
         this.offsetX = 5;
@@ -26,20 +26,6 @@ class Chicken extends MovableObject {
         this.isDead = false;
         this.chickenDeath.volume = 0.3;
     }
-
-    animate() {
-        this.moveInterval = setInterval(() => {
-            if (!this.isDead) {
-                this.moveLeft();
-            }
-        }, 1000 / 60);
-        this.animationInterval = setInterval(() => {
-            if (!this.isDead) {
-                this.playAnimation(this.IMAGES_WALKING, 2);
-            }
-        }, 100);
-    }
-
 
     hit() {
         if (!this.isDead) {
@@ -58,11 +44,6 @@ class Chicken extends MovableObject {
         setTimeout(() => {
             this.removeFromGame();
         }, 1000); 
-    }
-    
-    stopMotion() {
-        clearInterval(this.moveInterval);
-        clearInterval(this.animationInterval);
     }
     
     removeFromGame() {
