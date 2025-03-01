@@ -8,6 +8,10 @@ function initLevel() {
         new Bottle(90),
         new Bottle(80),
         new Bottle(70),
+        new Bottle(200),
+        new Bottle(250),
+        new Bottle(300),
+        new Bottle(350),
         new Bottle(170)],
 
         [new Chicken(),

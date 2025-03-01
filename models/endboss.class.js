@@ -95,7 +95,13 @@ class Endboss extends MovableObject {
                 return;
             } else {
                 this.playAnimation(this.IMAGES_WALKING, 2);
-                this.moveLeft();
+                if (this.world.character.x < this.x) {
+                    this.otherDirection = false; // 🔄 Schaut nach links
+                    this.moveLeft();
+                } else {
+                    this.otherDirection = true; // 🔄 Schaut nach rechts
+                    this.moveRight();
+                }
             }
         }, 170);
     }
@@ -114,39 +120,37 @@ class Endboss extends MovableObject {
     }
 
     startAlertSequence() {
-        console.log("🚨 Endboss spielt Alarm-Sound und zeigt Alert-Animation!");
         levelMusic.pause();
         this.alarmSound.play();
-
-        this.playAnimation(this.IMAGES_ALERT, 2);
+        this.world.character.isFrozen = true;
+        let alertIndex = 0;
+        let alertInterval = setInterval(() => {
+            if (alertIndex < this.IMAGES_ALERT.length) {
+                this.img = this.imageCache[this.IMAGES_ALERT[alertIndex]];
+                alertIndex++;
+            } else {
+                clearInterval(alertInterval);
+            }
+        }, 400);
 
         this.alarmSound.onended = () => {
             console.log("🎵 Level-Musik wird fortgesetzt...");
             levelMusic.play();
-
-            setTimeout(() => {
-                console.log("🐔 Endboss beginnt nach 2 Sekunden zu laufen!");
-                this.hasStartedMoving = true;
-                this.startMoving();
-                this.startAttackSequence();
-            }, 1000);
+            this.world.character.isFrozen = false;
+            this.hasStartedMoving = true;
+            this.startAttackSequence();
         };
     }
 
     takeDamage(amount) {
         if (this.isHurt || this.energy === 0) return;
-
         this.energy = Math.max(0, this.energy - amount);
         this.lastHit = Date.now();
         this.isHurt = true;
         this.isAttacking = false;
         this.speed = 0;
-
-        console.log(`🔥 Endboss getroffen! Verbleibende HP: ${this.energy}`);
-
         this.world.statusBarEndboss.setPercentage(this.energy);
         this.playAnimation(this.IMAGES_HURT, 1);
-
         setTimeout(() => {
             this.isHurt = false;
             if (this.energy > 0) {
@@ -159,16 +163,24 @@ class Endboss extends MovableObject {
 
     startAttackSequence() {
         if (this.isDead || this.isAttacking) return;
-
-        console.log("⚔️ Endboss startet Angriff!");
         this.isAttacking = true;
-        this.speed = 0;
-        this.speedY = this.attackJumpHeight;
-        this.speed = this.attackSpeed;
+        this.speed = 0; 
+        this.speedY = this.attackJumpHeight; 
+        this.speed = this.attackSpeed; 
+        if (this.world.character.x < this.x) {
+            this.otherDirection = false;
+        } else {
+            this.otherDirection = true;
+        }
         this.playAnimation(this.IMAGES_ATTACK, 1);
         let attackStartX = this.x;
         let attackInterval = setInterval(() => {
-            this.x -= this.speed;
+            if (this.otherDirection) {
+                this.x += this.speed; 
+            } else {
+                this.x -= this.speed;
+            }
+    
             if (Math.abs(this.x - attackStartX) > this.attackDistance) {
                 clearInterval(attackInterval);
                 this.stopAttack();
@@ -184,15 +196,22 @@ class Endboss extends MovableObject {
     }
 
     die() {
+        if (this.isDead) return; 
         console.log("☠️ Der Endboss ist besiegt!");
         this.isDead = true;
-        this.speed = 0;
-        this.playAnimation(this.IMAGES_DEAD, 1);
-
+        this.speed = 0; 
+        let deathIndex = 0;
+        let deathInterval = setInterval(() => {
+            if (deathIndex < this.IMAGES_DEAD.length) {
+                this.img = this.imageCache[this.IMAGES_DEAD[deathIndex]]; 
+                deathIndex++;
+            } else {
+                clearInterval(deathInterval); 
+            }
+        }, 400);
+        this.world.freezeGame(); 
         setTimeout(() => {
-            this.x = -9999;
-            console.log("🏆 Spiel beendet! 🎉");
-            this.world.endGame();
-        }, 3000);
+            this.world.showWinMenu(); 
+        }, 2000);
     }
 }

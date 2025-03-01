@@ -136,6 +136,31 @@ canvas {
     animation: fadeIn 1s forwards;
 }
 
+#win-menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.win-image {
+    width: 300px;
+    margin-bottom: 20px;
+}
+
+.win-button {
+    display: block;
+    width: 200px;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
 @keyframes fadeOut {
     from {
         opacity: 1;

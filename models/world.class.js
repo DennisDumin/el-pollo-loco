@@ -19,6 +19,7 @@ class World {
         this.character = new Character(this);
         this.draw();
         this.setWorld();
+        this.statusBarEndboss.visible = false;
         this.run();
         this.endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
     }
@@ -46,40 +47,39 @@ class World {
 
     checkEndbossActivation() {
         let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-        
-        if (endboss && this.character.x > 1400 && !endboss.isActivated) {
+
+        if (endboss && this.character.x > 1500 && !endboss.isActivated) {
             console.log("🚨 Endboss erscheint, Charakter wird eingefroren!");
-    
+
             endboss.isActivated = true;
             endboss.startAlertSequence();
-    
+
             this.statusBarEndboss.setPercentage(100);
             this.statusBarEndboss.visible = true;
-    
+
             this.character.isFrozen = true;
-            setTimeout(() => {
-                console.log("✅ Charakter kann sich wieder bewegen!");
-                this.character.isFrozen = false;
-            }, 2000);
         }
     }
 
     checkThrowableObjects() {
-        if (this.character.isFrozen) return;
         let now = Date.now();
         let throwCooldown = 2000;
+        if (this.character.isFrozen) {
+            return;
+        }
+
         if (this.keyboard.THROW && now - this.character.lastThrowTime >= throwCooldown) {
             if (this.character.bottlesCollected > 0) {
-                let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 10);
+                let bottleX = this.character.otherDirection ? this.character.x - 20 : this.character.x + 100;
+                let bottleDirection = this.character.otherDirection ? -1 : 1;
+                let bottle = new ThrowableObject(bottleX, this.character.y + 10, bottleDirection);
                 this.throwableObjects.push(bottle);
                 this.character.lastThrowTime = now;
-                this.character.idleTime = null;
                 this.character.bottlesCollected--;
                 this.statusBarBottle.removeBottle();
             }
-        };
+        }
     }
-
 
     checkCollisionWithBottle() {
         this.level.bottles.forEach((bottle, index) => {
@@ -130,16 +130,16 @@ class World {
                 }
             });
         });
-    
+
         let jumpedOnEnemy = this.checkJumpOnEnemy();
-    
+
         if (!jumpedOnEnemy) {
             this.level.enemies.forEach((enemy) => {
                 if (!enemy.isDead && this.character.isColliding(enemy) && !this.character.isHurt() && !this.isJumpingOnEnemy(enemy)) {
-                    
+
                     if (enemy instanceof Endboss) {
                         console.log("⚔️ Charakter berührt den Endboss!");
-                        this.character.hit(); 
+                        this.character.hit();
                         this.statusBarHealth.setPercentage(this.character.energy);
                     } else {
                         console.log("💥 Charakter nimmt Schaden von einem Gegner!");
@@ -152,25 +152,25 @@ class World {
     }
 
     handleEndbossHit(bottle, bottleIndex, endboss) {
-        if (!endboss.isDead && this.throwableObjects[bottleIndex] && !bottle.collisionDetected) {  
+        if (!endboss.isDead && this.throwableObjects[bottleIndex] && !bottle.collisionDetected) {
             console.log("💀 Flasche trifft Endboss!");
-            bottle.collisionDetected = true;  
+            bottle.collisionDetected = true;
             if (Date.now() - endboss.lastHit > 500) {
                 endboss.takeDamage(20);
                 this.statusBarEndboss.setPercentage(endboss.energy);
-                endboss.lastHit = Date.now(); 
+                endboss.lastHit = Date.now();
             } else {
                 console.log("🛡️ Endboss hat noch Cooldown, kein weiterer Schaden!");
             }
-    
+
             this.throwableObjects[bottleIndex].stopMotion();
             this.throwableObjects[bottleIndex].playSplashAnimation();
-            
+
             setTimeout(() => {
                 this.throwableObjects.splice(bottleIndex, 1);
                 console.log("🧴 Flasche entfernt nach Treffer!");
             }, 100);
-            
+
             if (endboss.energy <= 0) {
                 endboss.die();
                 console.log("🎉 Endboss wurde besiegt!");
@@ -197,11 +197,11 @@ class World {
     isJumpingOnEnemy(enemy) {
         let characterBottom = this.character.y + this.character.height;
         let enemyTop = enemy.y;
-        let jumpThreshold = enemy instanceof ChickenTiny ? enemy.height * 0.8 : enemy.height * 0.5;  
+        let jumpThreshold = enemy instanceof ChickenTiny ? enemy.height * 0.8 : enemy.height * 0.5;
         return (
-            characterBottom >= enemyTop &&  
-            characterBottom <= enemyTop + jumpThreshold && 
-            this.character.speedY < 0 
+            characterBottom >= enemyTop &&
+            characterBottom <= enemyTop + jumpThreshold &&
+            this.character.speedY < 0
         );
     }
 
@@ -250,7 +250,11 @@ class World {
         this.ctx.translate(-this.camera_x, 0);
         this.addToMap(this.statusBarBottle);
         this.ctx.translate(this.camera_x, 0);
-        this.addToMap(this.statusBarEndboss);
+        if (this.statusBarEndboss.visible) {
+            this.ctx.translate(-this.camera_x, 0);
+            this.addToMap(this.statusBarEndboss);
+            this.ctx.translate(this.camera_x, 0);
+        }
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.level.bottles);
         this.addObjectsToMap(this.level.coins);
@@ -307,11 +311,21 @@ class World {
         this.ctx.restore();
     }
 
-    endGame() {
-        console.log("🎉 Spiel gewonnen! 🏆");
-        setTimeout(() => {
-            alert("Du hast das Spiel gewonnen! 🎉");
-            location.reload();
-        }, 2000);
+    showWinMenu() {
+        let winScreen = document.createElement('div');
+        winScreen.id = "win-menu";
+        winScreen.innerHTML = `
+            <img src="img/9_intro_outro_screens/win/win_1.png" alt="You Win!" class="win-image">
+            <button onclick="restartGame()" class="win-button">New Game</button>
+            <button onclick="goToMenu()" class="win-button">Menu</button>
+        `;
+        document.body.appendChild(winScreen);
     }
+
+    freezeGame() {
+        this.character.isFrozen = true;
+        this.level.enemies.forEach(enemy => enemy.speed = 0);
+        this.throwableObjects = [];
+    }
+    
 }

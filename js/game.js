@@ -26,5 +26,13 @@ function handleKeyEvent(e, state) {
     }
 }
 
+function restartGame() {
+    location.reload(); 
+}
+
+function goToMenu() {
+    window.location.href = "index.html";
+}
+
 window.addEventListener("keydown", (e) => handleKeyEvent(e, true));
 window.addEventListener("keyup", (e) => handleKeyEvent(e, false));

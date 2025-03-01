@@ -19,10 +19,10 @@ class ChickenTiny extends MovableObject {
         this.x = 300 + Math.random() * 500;
         this.speed = 0.15 + Math.random() * 0.8;
         this.animate();
-        this.offsetHeight = 35;
-        this.offsetWidth = 30;
-        this.offsetX = 3;
-        this.offsetY = 1;
+        this.offsetHeight = 50;
+        this.offsetWidth = 40;
+        this.offsetX = 1;
+        this.offsetY = -3;
         this.isDead = false;
         this.chickenDeath.volume = 0.3;
     }

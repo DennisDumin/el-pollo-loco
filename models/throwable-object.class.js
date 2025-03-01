@@ -16,13 +16,16 @@ class ThrowableObject extends MovableObject {
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png'
     ];
 
-    constructor(x, y) {
+    constructor(x, y, direction) {
         super().loadImage('img/6_salsa_bottle/salsa_bottle.png')
         this.loadImages(this.IMAGES_ROTATE);
         this.loadImages(this.IMAGES_SPLASH);
         this.x = x;
         this.y = y;
         this.throw();
+        this.direction = direction;
+        this.speedX = 10 * this.direction; 
+        this.speedY = 10;
         this.height = 70;
         this.width = 70;
         this.offsetHeight = 55;
@@ -40,7 +43,6 @@ class ThrowableObject extends MovableObject {
 
     handleGroundCollision() {
         if (this.y >= 370) {
-            console.log("💥 Flasche trifft auf den Boden!");
             this.speedY = 0;
             this.speedX = 0;
             this.playSplashAnimation();
@@ -50,7 +52,6 @@ class ThrowableObject extends MovableObject {
     handleEnemyCollision() {
         this.world.level.enemies.forEach((enemy) => {
             if (this.isColliding(enemy)) {
-                console.log("🔥 Flasche trifft Gegner:", enemy);
                 this.stopMotion();
                 this.playSplashAnimation();
     

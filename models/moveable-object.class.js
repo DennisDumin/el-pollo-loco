@@ -28,7 +28,7 @@ class MovableObject extends DrawableObject {
 
     hit() {
         if (this.energy === 0 || (Date.now() - this.lastHit) <= 500) return;
-        
+
         this.energy = Math.max(0, this.energy - 20);
         this.lastHit = Date.now();
         this.hurtSoundPlayed = false;
@@ -51,27 +51,27 @@ class MovableObject extends DrawableObject {
     }
 
     moveRight() {
-        if (this.isFrozen) return; 
+        if (this.isFrozen) return;
         this.x += this.speed;
     }
-    
+
     moveLeft() {
-        if (this.isFrozen) return;  
+        if (this.isFrozen) return;
         this.x -= this.speed;
     }
 
-    playAnimation(images, frameDelay = 10) { 
+    playAnimation(images, frameDelay = 10) {
         if (!this.animationFrameCounter) {
             this.animationFrameCounter = 0;
         }
-    
+
         if (this.animationFrameCounter % frameDelay === 0) {
             let i = this.currentImage % images.length;
             let path = images[i];
             this.img = this.imageCache[path];
             this.currentImage++;
         }
-    
+
         this.animationFrameCounter++;
     }
 
@@ -97,15 +97,16 @@ class MovableObject extends DrawableObject {
     }
 
     throw() {
-        if (this.isFrozen) return;
-        this.applyGravity();
+        this.idleTime = null;
+        this.applyGravity(); 
         this.startBottleAnimation();
-        this.speedY = 10;
         this.moveInterval = setInterval(() => {
-            this.x += 20;
-            if (this.y >= 0) {
+            this.x += this.speedX;
+            this.y -= this.speedY;  
+            this.speedY -= (this.acceleration - 2.5); 
+            if (this.y >= 360) {
                 this.handleGroundCollision();
             }
-        }, 1000 / 25);
+        }, 1000 / 60);
     }
 }
