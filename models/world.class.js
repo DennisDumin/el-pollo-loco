@@ -11,9 +11,12 @@ class World {
     statusBarBottle = new StatusBarBottle();
     statusBarEndboss = new StatusBarEndboss();
     throwableObjects = [];
+    winSound = new Audio('audio/win.ogg');
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
+        this.collectSound.volume = 0.3;
+        this.winSound.volume = 0.5;
         this.canvas = canvas;
         this.keyboard = keyboard;
         this.character = new Character(this);
@@ -312,6 +315,9 @@ class World {
     }
 
     showWinMenu() {
+        levelMusic.pause();
+        levelMusic.currentTime = 0; 
+        this.winSound.play(); 
         let winScreen = document.createElement('div');
         winScreen.id = "win-menu";
         winScreen.innerHTML = `
@@ -319,6 +325,7 @@ class World {
             <button onclick="restartGame()" class="win-button">New Game</button>
             <button onclick="goToMenu()" class="win-button">Menu</button>
         `;
+    
         document.body.appendChild(winScreen);
     }
 

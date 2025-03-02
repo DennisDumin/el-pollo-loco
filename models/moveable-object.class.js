@@ -125,7 +125,19 @@ class MovableObject extends DrawableObject {
     }
 
     stopMotion() {
-        clearInterval(this.moveInterval);
-        clearInterval(this.animationInterval);
-    }    
+        if (this.moveInterval) clearInterval(this.moveInterval);
+        if (this.animationInterval) clearInterval(this.animationInterval);
+        if (this.gravityInterval) clearInterval(this.gravityInterval);
+        if (this.attackInterval) clearInterval(this.attackInterval);
+        if (this.alertInterval) clearInterval(this.alertInterval);
+        if (this.deathInterval) clearInterval(this.deathInterval);
+        this.moveInterval = null;
+        this.animationInterval = null;
+        this.gravityInterval = null;
+        this.attackInterval = null;
+        this.alertInterval = null;
+        this.deathInterval = null;
+        this.speed = 0;
+        this.isAttacking = false;
+    }
 }

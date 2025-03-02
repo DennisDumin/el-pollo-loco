@@ -52,7 +52,6 @@ class ThrowableObject extends MovableObject {
     handleEnemyCollision() {
         this.world.level.enemies.forEach((enemy) => {
             if (this.isColliding(enemy)) {
-                this.stopMotion();
                 this.playSplashAnimation();
     
                 if (enemy instanceof Endboss) {

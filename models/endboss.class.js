@@ -197,6 +197,7 @@ class Endboss extends MovableObject {
         console.log("☠️ Der Endboss ist besiegt!");
         this.isDead = true;
         this.speed = 0; 
+        this.stopMotion();
         let deathIndex = 0;
         this.deathInterval = setGameInterval(() => {
             if (deathIndex < this.IMAGES_DEAD.length) {

@@ -28,16 +28,21 @@ function handleKeyEvent(e, state) {
 }
 
 function restartGame() {
-    console.log("🔄 Neues Spiel wird gestartet...");
     clearAllGameIntervals();
-    world = null;
+    if (world) {
+        if (world.endboss) {
+            world.endboss.stopMotion(); 
+        }
+        world = null;
+    }
     level1 = null;
     let winScreen = document.getElementById('win-menu');
     if (winScreen) winScreen.remove();
+    levelMusic.pause();
+    levelMusic.currentTime = 0; 
     initLevel();
     world = new World(canvas, keyboard);
-    
-    console.log("✅ Neues Spiel gestartet!");
+    levelMusic.play();
 }
 
 function setGameInterval(callback, time) {
@@ -55,11 +60,25 @@ function clearAllGameIntervals() {
 function goToMenu() {
     console.log("📜 Zurück ins Menü...");
     clearAllGameIntervals();
+    levelMusic.pause();
+    levelMusic.currentTime = 0;
     let winScreen = document.getElementById('win-menu');
-    if (winScreen) winScreen.remove();
+    if (winScreen) {
+        winScreen.style.opacity = '0';
+        setTimeout(() => {
+            winScreen.remove(); 
+        }, 500);
+    }
+
     let startscreen = document.getElementById('startscreen');
-    if (startscreen) startscreen.style.display = 'block';
-    if (canvas) canvas.style.display = 'none';
+    if (startscreen) {
+        startscreen.style.display = 'block';
+        startscreen.classList.remove('fade-out'); 
+    }
+
+    if (canvas) {
+        canvas.style.display = 'none';
+    }
 }
 
 window.addEventListener("keydown", (e) => handleKeyEvent(e, true));

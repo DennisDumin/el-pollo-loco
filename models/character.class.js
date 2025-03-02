@@ -99,7 +99,7 @@ class Character extends MovableObject {
 
     animate() {
         this.movementInterval = setGameInterval(() => {
-            if (this.isFrozen) return;
+             if (this.isFrozen || this.world.gameWon) return;
     
             if (this.world.keyboard.RIGHT && this.x < this.world.level.levelEndX) {
                 this.moveRight();
@@ -160,6 +160,10 @@ class Character extends MovableObject {
     }
 
     getIdleAnimation() {
+        if (this.isFrozen || this.world.gameWon) {
+            this.snoreSound.pause(); 
+            return; 
+        }
         let longIdleTime = 5000;
         if (!this.idleTime) {
             this.idleTime = Date.now()
