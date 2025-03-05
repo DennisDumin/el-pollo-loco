@@ -160,19 +160,17 @@ class Character extends MovableObject {
     }
 
     getIdleAnimation() {
-        if (this.isFrozen || this.world.gameWon) {
-            this.snoreSound.pause(); 
-            return; 
-        }
         let longIdleTime = 5000;
         if (!this.idleTime) {
-            this.idleTime = Date.now()
-        } else if (Date.now() - this.idleTime >= longIdleTime) {
-            this.playAnimation(this.IMAGES_LONG_IDLE, 15)
+            this.idleTime = Date.now();
+        } 
+        else if (Date.now() - this.idleTime >= longIdleTime && !this.isFrozen && !this.world.gameWon) {
+            this.playAnimation(this.IMAGES_LONG_IDLE, 15);
             this.snoreSound.play();
-            return
+            return;
         }
-        this.playAnimation(this.IMAGES_IDLE, 5)
+        this.playAnimation(this.IMAGES_IDLE, 5);
     }
+    
 
 }

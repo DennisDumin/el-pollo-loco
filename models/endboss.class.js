@@ -98,7 +98,7 @@ class Endboss extends MovableObject {
                     this.otherDirection = false;
                     this.moveLeft();
                 } else {
-                    this.otherDirection = true; 
+                    this.otherDirection = true;
                     this.moveRight();
                 }
             }
@@ -146,7 +146,9 @@ class Endboss extends MovableObject {
         this.lastHit = Date.now();
         this.isHurt = true;
         this.isAttacking = false;
-        this.speed = 0;
+        this.speed = 0; 
+        clearInterval(this.animationInterval); 
+        console.log(`🔥 Endboss getroffen! Verbleibende HP: ${this.energy}`);
         this.world.statusBarEndboss.setPercentage(this.energy);
         this.playAnimation(this.IMAGES_HURT, 1);
         setTimeout(() => {
@@ -157,10 +159,10 @@ class Endboss extends MovableObject {
                 this.die();
             }
         }, 1000);
-    }
+    }    
 
     startAttackSequence() {
-        if (this.isDead || this.isAttacking) return;
+        if (this.isDead || this.isAttacking || this.isHurt) return;
         this.isAttacking = true;
         this.speed = 0; 
         this.speedY = this.attackJumpHeight; 
