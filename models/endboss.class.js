@@ -87,9 +87,9 @@ class Endboss extends MovableObject {
             if (!this.isActivated) {
                 this.playAnimation(this.IMAGES_ALERT, 2);
             } else if (this.isHurt) {
-                this.playAnimation(this.IMAGES_HURT, 2);
+                this.playAnimation(this.IMAGES_HURT, 1);
             } else if (this.isAttacking) {
-                this.playAnimation(this.IMAGES_ATTACK, 2);
+                this.playAnimation(this.IMAGES_ATTACK, 1);
             } else if (this.isActivated && !this.hasStartedMoving) {
                 return;
             } else {
@@ -150,7 +150,8 @@ class Endboss extends MovableObject {
         clearInterval(this.animationInterval); 
         console.log(`🔥 Endboss getroffen! Verbleibende HP: ${this.energy}`);
         this.world.statusBarEndboss.setPercentage(this.energy);
-        this.playAnimation(this.IMAGES_HURT, 1);
+        clearInterval(this.attackInterval); 
+        this.playAnimation(this.IMAGES_HURT, 0.5);
         setTimeout(() => {
             this.isHurt = false;
             if (this.energy > 0) {
@@ -172,7 +173,7 @@ class Endboss extends MovableObject {
         } else {
             this.otherDirection = true;
         }
-        this.playAnimation(this.IMAGES_ATTACK, 1);
+        this.playAnimation(this.IMAGES_ATTACK, 2);
         let attackStartX = this.x;
         this.attackInterval = setGameInterval(() => {
             if (this.otherDirection) {
@@ -195,18 +196,20 @@ class Endboss extends MovableObject {
     }
 
     die() {
-        if (this.isDead) return; 
+        if (this.isDead) return;
         console.log("☠️ Der Endboss ist besiegt!");
         this.isDead = true;
-        this.speed = 0; 
-        this.stopMotion();
+        this.speed = 0;
+        this.stopMotion(); 
+        clearInterval(this.attackInterval);
+        clearInterval(this.animationInterval);
         let deathIndex = 0;
         this.deathInterval = setGameInterval(() => {
             if (deathIndex < this.IMAGES_DEAD.length) {
-                this.img = this.imageCache[this.IMAGES_DEAD[deathIndex]]; 
+                this.img = this.imageCache[this.IMAGES_DEAD[deathIndex]];
                 deathIndex++;
             } else {
-                clearInterval(this.deathInterval); 
+                clearInterval(this.deathInterval);
             }
         }, 400);
         this.world.freezeGame(); 
