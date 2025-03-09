@@ -93,7 +93,7 @@ class Endboss extends MovableObject {
             } else if (this.isActivated && !this.hasStartedMoving) {
                 return;
             } else {
-                this.playAnimation(this.IMAGES_WALKING, 2);
+                this.playAnimation(this.IMAGES_WALKING, 1);
                 if (this.world.character.x < this.x) {
                     this.otherDirection = false;
                     this.moveLeft();
@@ -164,6 +164,7 @@ class Endboss extends MovableObject {
 
     startAttackSequence() {
         if (this.isDead || this.isAttacking || this.isHurt) return;
+        clearInterval(this.animationInterval); 
         this.isAttacking = true;
         this.speed = 0; 
         this.speedY = this.attackJumpHeight; 
@@ -192,7 +193,6 @@ class Endboss extends MovableObject {
         console.log("⏹️ Endboss beendet Angriff.");
         this.isAttacking = false;
         this.speed = 2;
-        this.playAnimation(this.IMAGES_WALKING, 2);
     }
 
     die() {

@@ -102,10 +102,12 @@ class World {
     }
 
     handleBottlePickup(bottle, index) {
-        bottle.pickUpBottle();
-        this.level.bottles.splice(index, 1);
-        this.character.bottlesCollected++;
-        this.statusBarBottle.addBottles(this.character.bottlesCollected);
+        if (this.character.bottlesCollected < 5) {
+            bottle.pickUpBottle();
+            this.level.bottles.splice(index, 1);
+            this.character.bottlesCollected++;
+            this.statusBarBottle.addBottles(this.character.bottlesCollected);
+        }
     }
 
     handleCoinPickup(coin, index) {
@@ -182,29 +184,31 @@ class World {
     }
 
     checkJumpOnEnemy() {
-        let jumpedOnEnemy = false;
+        let enemiesToDefeat = [];
         this.level.enemies.forEach((enemy) => {
-            if (!enemy.isDead && this.isJumpingOnEnemy(enemy) && this.character.isColliding(enemy)) {
-                if (enemy instanceof Chicken || enemy instanceof ChickenTiny) {
-                    console.log(`🐔 Charakter springt auf ${enemy instanceof ChickenTiny ? "Tiny Chicken" : "Chicken"}!`);
-                    enemy.hit();
-                    enemy.stopMotion();
-                    this.character.speedY = 20;
-                    jumpedOnEnemy = true;
-                }
+            if (!enemy.isDead && this.isJumpingOnEnemy(enemy)) {
+                enemiesToDefeat.push(enemy);
             }
         });
-        return jumpedOnEnemy;
+        if (enemiesToDefeat.length > 0) {
+            enemiesToDefeat.forEach(enemy => {
+                enemy.hit();
+                enemy.stopMotion();
+            });
+            this.character.speedY = 20;
+        }
     }
-
+    
     isJumpingOnEnemy(enemy) {
         let characterBottom = this.character.y + this.character.height;
         let enemyTop = enemy.y;
-        let jumpThreshold = enemy instanceof ChickenTiny ? enemy.height * 0.8 : enemy.height * 0.5;
+        let jumpThreshold = enemy instanceof ChickenTiny ? enemy.height * 0.4 : enemy.height * 0.6;
         return (
-            characterBottom >= enemyTop &&
-            characterBottom <= enemyTop + jumpThreshold &&
-            this.character.speedY < 0
+            this.character.speedY < 0 && 
+            characterBottom >= enemyTop && 
+            characterBottom <= enemyTop + jumpThreshold && 
+            this.character.x + this.character.width >= enemy.x && 
+            this.character.x <= enemy.x + enemy.width
         );
     }
 
@@ -214,10 +218,8 @@ class World {
             chicken.hit();
             chicken.stopMotion();
             chicken.showDeathAnimation();
-
             this.throwableObjects[bottleIndex].stopMotion();
             this.throwableObjects[bottleIndex].playSplashAnimation();
-
             setTimeout(() => {
                 this.throwableObjects.splice(bottleIndex, 1);
             }, 500);

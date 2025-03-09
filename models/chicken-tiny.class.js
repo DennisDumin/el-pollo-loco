@@ -43,7 +43,7 @@ class ChickenTiny extends MovableObject {
     
         setTimeout(() => {
             this.removeFromGame();
-        }, 1000); 
+        }, 500); 
     }
     
     removeFromGame() {
