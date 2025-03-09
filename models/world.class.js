@@ -50,10 +50,8 @@ class World {
 
     checkEndbossActivation() {
         let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-
         if (endboss && this.character.x > 1500 && !endboss.isActivated) {
             console.log("🚨 Endboss erscheint, Charakter wird eingefroren!");
-
             endboss.isActivated = true;
             endboss.startAlertSequence();
 
@@ -160,6 +158,7 @@ class World {
         if (!endboss.isDead && this.throwableObjects[bottleIndex] && !bottle.collisionDetected) {
             console.log("💀 Flasche trifft Endboss!");
             bottle.collisionDetected = true;
+    
             if (Date.now() - endboss.lastHit > 500) {
                 endboss.takeDamage(20);
                 this.statusBarEndboss.setPercentage(endboss.energy);
@@ -167,15 +166,14 @@ class World {
             } else {
                 console.log("🛡️ Endboss hat noch Cooldown, kein weiterer Schaden!");
             }
-
-            this.throwableObjects[bottleIndex].stopMotion();
-            this.throwableObjects[bottleIndex].playSplashAnimation();
-
-            setTimeout(() => {
-                this.throwableObjects.splice(bottleIndex, 1);
+            bottle.stopMotion();
+            bottle.playSplashAnimation(() => {
                 console.log("🧴 Flasche entfernt nach Treffer!");
-            }, 100);
-
+                let index = this.throwableObjects.indexOf(bottle);
+                if (index > -1) {
+                    this.throwableObjects.splice(index, 1);
+                }
+            });
             if (endboss.energy <= 0) {
                 endboss.die();
                 console.log("🎉 Endboss wurde besiegt!");
@@ -220,21 +218,6 @@ class World {
             chicken.showDeathAnimation();
             this.throwableObjects[bottleIndex].stopMotion();
             this.throwableObjects[bottleIndex].playSplashAnimation();
-            setTimeout(() => {
-                this.throwableObjects.splice(bottleIndex, 1);
-            }, 500);
-        }
-    }
-
-    handleEndbossHit(bottle, bottleIndex, endboss) {
-        if (!endboss.isDead) {
-            endboss.takeDamage(20);
-            this.throwableObjects[bottleIndex].stopMotion();
-            this.throwableObjects[bottleIndex].playSplashAnimation();
-
-            if (endboss.energy <= 0) {
-                endboss.die();
-            }
             setTimeout(() => {
                 this.throwableObjects.splice(bottleIndex, 1);
             }, 500);

@@ -153,12 +153,22 @@ canvas {
 }
 
 .win-button {
+    font-family: 'zabras', sans-serif;
+    letter-spacing: 5px;
+    background: #EA5F00;
+    color: black;
+    border-radius: 10px;
+    border: none;
     display: block;
     width: 200px;
     margin: 10px auto;
     padding: 10px;
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
+}
+
+.win-button:hover {
+    background: #cc5500;
 }
 
 @keyframes fadeOut {

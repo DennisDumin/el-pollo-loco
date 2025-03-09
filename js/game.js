@@ -1,6 +1,7 @@
 let canvas;
 let world;
 let levelMusic = new Audio('audio/music.mp3');
+popSound = new Audio('audio/pop.mp3');
 levelMusic.loop = true;
 levelMusic.volume = 0.3;
 let keyboard = new Keyboard();
@@ -21,6 +22,11 @@ const keyMap = {
     68: 'THROW'
 };
 
+function playPopSound() {
+    popSound.currentTime = 0;
+    popSound.play();
+}
+
 function handleKeyEvent(e, state) {
     if (keyMap[e.keyCode] !== undefined) {
         keyboard[keyMap[e.keyCode]] = state;
@@ -29,6 +35,7 @@ function handleKeyEvent(e, state) {
 
 function restartGame() {
     clearAllGameIntervals();
+    playPopSound();
     if (world) {
         if (world.endboss) {
             world.endboss.stopMotion(); 
@@ -58,7 +65,7 @@ function clearAllGameIntervals() {
 }
 
 function goToMenu() {
-    console.log("📜 Zurück ins Menü...");
+    playPopSound();
     clearAllGameIntervals();
     levelMusic.pause();
     levelMusic.currentTime = 0;
