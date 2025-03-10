@@ -26,12 +26,12 @@ class StatusBarBottle extends DrawableObject {
     }
 
     addBottles() {
-        this.currentBottles = Math.min(this.currentBottles + 1, 5);
-        this.setPercentage(this.currentBottles * 20);
+        this.currentBottles = Math.min(this.currentBottles + 1, 10);
+        this.setPercentage(this.currentBottles * 10);
     }
 
     removeBottle() {
         this.currentBottles = Math.max(this.currentBottles - 1, 0);
-        this.setPercentage(this.currentBottles * 20); 
+        this.setPercentage(this.currentBottles * 10); 
     }
 }

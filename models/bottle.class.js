@@ -9,10 +9,9 @@ class Bottle extends MovableObject {
       'img/6_salsa_bottle/2_salsa_bottle_on_ground.png',
     ];
   
-    constructor(x) {
+    constructor(x, imageIndex) {
       super();
-      const randomIndex = Math.floor(Math.random() * this.IMAGES.length);
-      this.loadImage(this.IMAGES[randomIndex]);
+      this.loadImage(this.IMAGES[imageIndex]);
       this.x = x;
       this.height = 70;
       this.width = 70;

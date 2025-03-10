@@ -61,7 +61,7 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_ATTACK);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
-        this.x = 1800;
+        this.x = 4000;
         this.alarmSound.volume = 0.3;
         this.speed = 2;
         this.animate();
@@ -106,7 +106,7 @@ class Endboss extends MovableObject {
     }
 
     checkActivation(characterX) {
-        if (characterX > 1400 && !this.isActivated) {
+        if (characterX > 3700 && !this.isActivated) {
             console.log("🚨 Endboss ist alarmiert!");
             this.isActivated = true;
             levelMusic.pause();

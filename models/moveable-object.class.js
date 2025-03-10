@@ -11,6 +11,7 @@ class MovableObject extends DrawableObject {
     lastHit = 0;
     idleTime = null;
     breakSound = new Audio('audio/glass.mp3');
+    throwSound = new Audio('audio/throw.mp3');
 
     constructor() {
         super();
@@ -97,6 +98,7 @@ class MovableObject extends DrawableObject {
     }
 
     throw() {
+        this.playThrowSound();
         this.idleTime = null;
         this.applyGravity(); 
         this.startBottleAnimation();
@@ -139,5 +141,11 @@ class MovableObject extends DrawableObject {
         this.deathInterval = null;
         this.speed = 0;
         this.isAttacking = false;
+    }
+
+    playThrowSound() {
+        this.throwSound.currentTime = 0;
+        this.throwSound.volume = 0.3;
+        this.throwSound.play();
     }
 }

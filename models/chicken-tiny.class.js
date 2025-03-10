@@ -16,8 +16,8 @@ class ChickenTiny extends MovableObject {
         super().loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
         this.loadImage(this.IMAGE_DEAD);
-        this.x = 300 + Math.random() * 500;
-        this.speed = 0.15 + Math.random() * 0.8;
+        this.x = 400 + Math.random() * 3000;
+        this.speed = 0.15 + Math.random() * 1.0;
         this.animateChicken();
         this.offsetHeight = 50;
         this.offsetWidth = 40;

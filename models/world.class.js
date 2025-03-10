@@ -50,7 +50,7 @@ class World {
 
     checkEndbossActivation() {
         let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-        if (endboss && this.character.x > 1500 && !endboss.isActivated) {
+        if (endboss && this.character.x > 3700 && !endboss.isActivated) {
             console.log("🚨 Endboss erscheint, Charakter wird eingefroren!");
             endboss.isActivated = true;
             endboss.startAlertSequence();
@@ -83,9 +83,9 @@ class World {
     }
 
     checkCollisionWithBottle() {
-        this.level.bottles.forEach((bottle, index) => {
+        this.level.bottles.forEach((bottle) => {
             if (this.character.isColliding(bottle)) {
-                this.handleBottlePickup(bottle, index);
+                this.handleBottlePickup(bottle);
             }
         });
     }
@@ -99,10 +99,9 @@ class World {
         });
     }
 
-    handleBottlePickup(bottle, index) {
-        if (this.character.bottlesCollected < 5) {
+    handleBottlePickup(bottle) {
+        if (this.character.bottlesCollected < 10) {
             bottle.pickUpBottle();
-            this.level.bottles.splice(index, 1);
             this.character.bottlesCollected++;
             this.statusBarBottle.addBottles(this.character.bottlesCollected);
         }
