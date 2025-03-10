@@ -51,13 +51,10 @@ class World {
     checkEndbossActivation() {
         let endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
         if (endboss && this.character.x > 3700 && !endboss.isActivated) {
-            console.log("🚨 Endboss erscheint, Charakter wird eingefroren!");
             endboss.isActivated = true;
             endboss.startAlertSequence();
-
             this.statusBarEndboss.setPercentage(100);
             this.statusBarEndboss.visible = true;
-
             this.character.isFrozen = true;
         }
     }
@@ -93,7 +90,6 @@ class World {
     checkCollisionWithCoin() {
         this.level.coins.forEach((coin, index) => {
             if (this.character.isColliding(coin)) {
-                console.log("✅ Charakter sammelt Coin!", coin);
                 this.handleCoinPickup(coin, index);
             }
         });
@@ -140,11 +136,9 @@ class World {
                 if (!enemy.isDead && this.character.isColliding(enemy) && !this.character.isHurt() && !this.isJumpingOnEnemy(enemy)) {
 
                     if (enemy instanceof Endboss) {
-                        console.log("⚔️ Charakter berührt den Endboss!");
                         this.character.hit();
                         this.statusBarHealth.setPercentage(this.character.energy);
                     } else {
-                        console.log("💥 Charakter nimmt Schaden von einem Gegner!");
                         this.character.hit();
                         this.statusBarHealth.setPercentage(this.character.energy);
                     }
@@ -155,19 +149,15 @@ class World {
 
     handleEndbossHit(bottle, bottleIndex, endboss) {
         if (!endboss.isDead && this.throwableObjects[bottleIndex] && !bottle.collisionDetected) {
-            console.log("💀 Flasche trifft Endboss!");
             bottle.collisionDetected = true;
     
             if (Date.now() - endboss.lastHit > 500) {
                 endboss.takeDamage(20);
                 this.statusBarEndboss.setPercentage(endboss.energy);
                 endboss.lastHit = Date.now();
-            } else {
-                console.log("🛡️ Endboss hat noch Cooldown, kein weiterer Schaden!");
             }
             bottle.stopMotion();
             bottle.playSplashAnimation(() => {
-                console.log("🧴 Flasche entfernt nach Treffer!");
                 let index = this.throwableObjects.indexOf(bottle);
                 if (index > -1) {
                     this.throwableObjects.splice(index, 1);
@@ -175,7 +165,6 @@ class World {
             });
             if (endboss.energy <= 0) {
                 endboss.die();
-                console.log("🎉 Endboss wurde besiegt!");
             }
         }
     }
@@ -211,7 +200,6 @@ class World {
 
     handleChickenHit(bottle, bottleIndex, chicken) {
         if (!chicken.isDead) {
-            console.log("🔥 Flasche trifft Chicken!");
             chicken.hit();
             chicken.stopMotion();
             chicken.showDeathAnimation();

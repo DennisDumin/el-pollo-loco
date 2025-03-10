@@ -16,7 +16,7 @@ class ChickenTiny extends MovableObject {
         super().loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
         this.loadImage(this.IMAGE_DEAD);
-        this.x = 400 + Math.random() * 3000;
+        this.x = 700 + Math.random() * 3500;
         this.speed = 0.15 + Math.random() * 1.0;
         this.animateChicken();
         this.offsetHeight = 50;
@@ -29,7 +29,6 @@ class ChickenTiny extends MovableObject {
 
     hit() {
         if (!this.isDead) {
-            console.log("🐔 Chicken wurde getroffen und stirbt!");
             this.isDead = true;
             this.stopMotion();
             this.chickenDeath.play();
@@ -38,9 +37,7 @@ class ChickenTiny extends MovableObject {
     }
     
     showDeathAnimation() {
-        console.log("🐔 Chicken zeigt Todesanimation!");
         this.loadImage(this.IMAGE_DEAD);
-    
         setTimeout(() => {
             this.removeFromGame();
         }, 500); 

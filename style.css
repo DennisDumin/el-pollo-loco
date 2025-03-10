@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'zabras';
-    src: url('fonts/zabars.ttf') format('truetype');
+    src: url('fonts/Zabars.ttf') format('truetype');
 }
 
 body {
@@ -169,6 +169,29 @@ canvas {
 
 .win-button:hover {
     background: #cc5500;
+}
+
+#loading-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    color: white;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+#loading-screen.show {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 @keyframes fadeOut {

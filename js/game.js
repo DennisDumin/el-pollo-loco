@@ -9,8 +9,19 @@ let gameIntervals = [];
 
 function init() {
     canvas = document.getElementById('canvas');
+    startNewGame();
+}
+
+function startNewGame() {
+    showLoadingScreen();
     initLevel();
     world = new World(canvas, keyboard);
+    setTimeout(() => {
+        console.log('🚀 Starting game...');
+        hideLoadingScreen();
+        levelMusic.play(); 
+        setupEventListeners();
+    }, 2000);
 }
 
 const keyMap = {
@@ -38,7 +49,7 @@ function restartGame() {
     playPopSound();
     if (world) {
         if (world.endboss) {
-            world.endboss.stopMotion(); 
+            world.endboss.stopMotion();
         }
         world = null;
     }
@@ -46,10 +57,8 @@ function restartGame() {
     let winScreen = document.getElementById('win-menu');
     if (winScreen) winScreen.remove();
     levelMusic.pause();
-    levelMusic.currentTime = 0; 
-    initLevel();
-    world = new World(canvas, keyboard);
-    levelMusic.play();
+    levelMusic.currentTime = 0;
+    startNewGame();
 }
 
 function setGameInterval(callback, time) {
@@ -61,7 +70,7 @@ function setGameInterval(callback, time) {
 function clearAllGameIntervals() {
     gameIntervals.forEach(clearInterval);
     gameIntervals = [];
-    console.log("⏹️ Alle Spiel-Intervalle wurden gestoppt!");
+    console.log("⏹️ All game intervals cleared");
 }
 
 function goToMenu() {
@@ -73,14 +82,14 @@ function goToMenu() {
     if (winScreen) {
         winScreen.style.opacity = '0';
         setTimeout(() => {
-            winScreen.remove(); 
+            winScreen.remove();
         }, 500);
     }
 
     let startscreen = document.getElementById('startscreen');
     if (startscreen) {
         startscreen.style.display = 'block';
-        startscreen.classList.remove('fade-out'); 
+        startscreen.classList.remove('fade-out');
     }
 
     if (canvas) {
@@ -88,5 +97,15 @@ function goToMenu() {
     }
 }
 
-window.addEventListener("keydown", (e) => handleKeyEvent(e, true));
-window.addEventListener("keyup", (e) => handleKeyEvent(e, false));
+function setupEventListeners() {
+    window.addEventListener("keydown", (e) => handleKeyEvent(e, true));
+    window.addEventListener("keyup", (e) => handleKeyEvent(e, false));
+}
+
+function showLoadingScreen() {
+    document.getElementById('loading-screen').classList.add('show');
+}
+
+function hideLoadingScreen() {
+    document.getElementById('loading-screen').classList.remove('show');
+}

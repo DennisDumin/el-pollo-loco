@@ -107,12 +107,10 @@ class Endboss extends MovableObject {
 
     checkActivation(characterX) {
         if (characterX > 3700 && !this.isActivated) {
-            console.log("🚨 Endboss ist alarmiert!");
             this.isActivated = true;
             levelMusic.pause();
             this.alarmSound.play();
             this.alarmSound.onended = () => {
-                console.log("🎵 Level-Musik wird fortgesetzt...");
                 levelMusic.play();
             };
         }
@@ -132,7 +130,6 @@ class Endboss extends MovableObject {
             }
         }, 400);
         this.alarmSound.onended = () => {
-            console.log("🎵 Level-Musik wird fortgesetzt...");
             levelMusic.play();
             this.world.character.isFrozen = false;
             this.hasStartedMoving = true;
@@ -148,7 +145,6 @@ class Endboss extends MovableObject {
         this.isAttacking = false;
         this.speed = 0; 
         clearInterval(this.animationInterval); 
-        console.log(`🔥 Endboss getroffen! Verbleibende HP: ${this.energy}`);
         this.world.statusBarEndboss.setPercentage(this.energy);
         clearInterval(this.attackInterval); 
         this.playAnimation(this.IMAGES_HURT, 0.5);
@@ -190,14 +186,12 @@ class Endboss extends MovableObject {
     }
 
     stopAttack() {
-        console.log("⏹️ Endboss beendet Angriff.");
         this.isAttacking = false;
         this.speed = 2;
     }
 
     die() {
         if (this.isDead) return;
-        console.log("☠️ Der Endboss ist besiegt!");
         this.isDead = true;
         this.speed = 0;
         this.stopMotion(); 
