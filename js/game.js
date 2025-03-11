@@ -16,11 +16,12 @@ function startNewGame() {
     showLoadingScreen();
     initLevel();
     world = new World(canvas, keyboard);
+    levelMusic.play(); 
     setTimeout(() => {
         console.log('🚀 Starting game...');
         hideLoadingScreen();
-        levelMusic.play(); 
         setupEventListeners();
+        initializeGameSounds(); 
     }, 2000);
 }
 
@@ -108,4 +109,48 @@ function showLoadingScreen() {
 
 function hideLoadingScreen() {
     document.getElementById('loading-screen').classList.remove('show');
+}
+
+function initializeGameSounds() {
+    console.log('🎵 Initializing game sounds...');
+
+    let sounds = [
+        world?.character?.walkSound,
+        world?.character?.jumpSound,
+        world?.character?.hurtSound,
+        world?.character?.snoreSound,
+        world?.character?.throwSound,
+        world?.endboss?.alarmSound,
+        world?.endboss?.deathSound,
+        world?.endboss?.hurtSound,
+        world?.collectSound,
+        world?.winSound,
+        ...(world?.level?.bottles?.map(bottle => bottle.collectSound) || []),
+        ...(world?.level?.coins?.map(coin => coin.collectSound) || []),
+        ...(world?.level?.enemies?.map(enemy => enemy.chickenDeath) || []),
+        ...(world?.level?.enemies?.map(enemy => enemy.breakSound) || [])
+    ].flat().filter(Boolean);
+    sounds.forEach(sound => playAndPause(sound));
+    console.log('✅ All game sounds initialized');
+}
+
+function playAndPause(sound) {
+    if (!sound) return;
+    let loaded = false;
+    sound.load();
+    let playPromise = sound.play();
+    if (playPromise !== undefined) {
+        playPromise
+            .then(() => {
+                console.log(`✅ Sound loaded: ${sound.src}`);
+                loaded = true;
+                if (loaded) {
+                    sound.pause(); 
+                    sound.currentTime = 0;
+                }
+            })
+            .catch((error) => {
+                console.warn(`⚠️ Sound preloading failed for ${sound.src}:`, error);
+            });
+    }
 }

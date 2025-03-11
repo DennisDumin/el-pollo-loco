@@ -10,6 +10,8 @@ class Character extends MovableObject {
     snoreSound = new Audio('audio/snore.mp3');
     bottlesCollected = 0;
     isFrozen = false;
+    isWalkingSoundPlaying = false;
+    isSoundLoaded = false;
 
     IMAGES_WALKING = [
         'img/2_character_pepe/2_walk/W-21.png',
@@ -114,9 +116,7 @@ class Character extends MovableObject {
             this.stopWalkSound();
             return;
         }
-
         let isMoving = false;
-
         if (this.world.keyboard.RIGHT && this.x < this.world.level.levelEndX) {
             this.moveRight();
             this.otherDirection = false;
@@ -133,7 +133,6 @@ class Character extends MovableObject {
             this.jump();
             this.resetIdleState();
         }
-
         if (isMoving && !this.isAboveGround()) {
             this.playWalkSound();
         } else {
@@ -204,17 +203,29 @@ class Character extends MovableObject {
     }
 
     playWalkSound() {
-        if (this.walkSound.paused) {
-            this.walkSound.loop = true;
-            this.walkSound.volume = 0.3;
-            this.walkSound.play();
+        if (!this.isWalkingSoundPlaying) {
+            this.walkSound.addEventListener('canplaythrough', () => {
+                this.isWalkingSoundPlaying = true;
+                this.walkSound.loop = true;
+                this.walkSound.volume = 0.3;
+    
+                let playPromise = this.walkSound.play();
+                if (playPromise !== undefined) {
+                    playPromise
+                        .catch((error) => {
+                            console.warn(`⚠️ Walk sound play failed:`, error);
+                        });
+                }
+            });
+            this.walkSound.load();
         }
     }
-
+    
     stopWalkSound() {
-        if (!this.walkSound.paused) {
+        if (this.isWalkingSoundPlaying) {
             this.walkSound.pause();
             this.walkSound.currentTime = 0;
+            this.isWalkingSoundPlaying = false;
         }
     }
 
