@@ -10,15 +10,10 @@ function init() {
 }
 
 function startNewGame() {
-    showLoadingScreen();
     initLevel();
     world = new World(canvas, keyboard);
     audioManager.playSound('audio/music.mp3', true, 0.3);
-    setTimeout(() => {
-        console.log('🚀 Starting game...');
-        hideLoadingScreen();
-        setupEventListeners();
-    }, 2000);
+    setupEventListeners();
 }
 
 const keyMap = {
@@ -43,24 +38,21 @@ function handleKeyEvent(e, state) {
 function restartGame() {
     clearAllGameIntervals();
     playPopSound();
+    cleanupGameWorld();
+    hideGameMenus();
+    audioManager.stopSound('audio/music.mp3');
+    audioManager.stopSound('audio/win.ogg');
+    audioManager.stopSound('audio/kikiriki.mp3');
+    startNewGame();
+}
+
+function cleanupGameWorld() {
     if (world) {
-        if (world.endboss) {
-            world.endboss.stopMotion();
-        }
-        if (world.character) {
-            world.character.stopCharacter();
-        }
+        if (world.endboss) world.endboss.stopMotion();
+        if (world.character) world.character.stopCharacter();
         world = null;
     }
     level1 = null;
-    let winScreen = document.getElementById('win-menu');
-    if (winScreen) winScreen.remove();
-    
-    // Stop all audio
-    audioManager.stopSound('audio/music.mp3');
-    audioManager.stopSound('audio/win.ogg');
-    
-    startNewGame();
 }
 
 function setGameInterval(callback, time) {
@@ -72,41 +64,36 @@ function setGameInterval(callback, time) {
 function clearAllGameIntervals() {
     gameIntervals.forEach(clearInterval);
     gameIntervals = [];
-    console.log("⏹️ All game intervals cleared");
 }
 
 function goToMenu() {
     playPopSound();
     clearAllGameIntervals();
     audioManager.stopSound('audio/music.mp3');
-    let winScreen = document.getElementById('win-menu');
-    if (winScreen) {
-        winScreen.style.opacity = '0';
-        setTimeout(() => {
-            winScreen.remove();
-        }, 500);
-    }
-
+    hideGameMenus();
     let startscreen = document.getElementById('startscreen');
     if (startscreen) {
         startscreen.style.display = 'block';
         startscreen.classList.remove('fade-out');
     }
-
     if (canvas) {
         canvas.style.display = 'none';
+    }
+}
+
+function hideGameMenus() {
+    let winScreen = document.getElementById('win-menu');
+    if (winScreen) {
+        winScreen.style.opacity = '0';
+        setTimeout(() => winScreen.remove(), 500);
+    }
+    let loseScreen = document.getElementById('lose-menu');
+    if (loseScreen) {
+        loseScreen.style.display = 'none';
     }
 }
 
 function setupEventListeners() {
     window.addEventListener("keydown", (e) => handleKeyEvent(e, true));
     window.addEventListener("keyup", (e) => handleKeyEvent(e, false));
-}
-
-function showLoadingScreen() {
-    document.getElementById('loading-screen').classList.add('show');
-}
-
-function hideLoadingScreen() {
-    document.getElementById('loading-screen').classList.remove('show');
 }

@@ -85,9 +85,11 @@
     <!-- Game Area -->
     <canvas width="720" height="480" id="canvas"></canvas>
 
-    <!-- Loading Screen -->
-    <div id="loading-screen">
-        <h2>Loading...</h2>
+    <!-- Lose Menu -->
+    <div id="lose-menu" style="display: none;">
+        <img src="img/9_intro_outro_screens/game_over/you_lost.png" class="lose-image" alt="You Lost">
+        <button class="win-button" onclick="restartGame()">New Game</button>
+        <button class="win-button" onclick="goToMenu()">Menu</button>
     </div>
 </body>
 

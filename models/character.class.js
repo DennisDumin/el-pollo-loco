@@ -81,6 +81,7 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_IDLE);
         this.loadImages(this.IMAGES_LONG_IDLE);
         this.world = world;
+        this.hasTriggeredDeath = false;
         this.lastThrowTime = 0;
         this.lastDamageTime = 0;
         this.applyGravity();
@@ -132,7 +133,10 @@ class Character extends MovableObject {
 
     updateAnimation() {
         if (this.isDead()) {
-            this.playAnimation(this.IMAGES_DEAD, 2);
+                if (!this.hasTriggeredDeath) {
+                    this.die();
+                    this.hasTriggeredDeath = true;
+                }
         } else if (this.isHurt()) {
             this.handleHurtAnimation();
         } else if (this.isAboveGround()) {
@@ -204,7 +208,7 @@ class Character extends MovableObject {
                 });
         }
     }
-    
+
     stopWalkSound() {
         if (this.isWalkingSoundPlaying) {
             this.audioManager.stopSound('audio/running.mp3');
@@ -221,8 +225,42 @@ class Character extends MovableObject {
                 console.warn(` Jump sound play failed:`, error);
             });
     }
-    
+
     stopJumpSound() {
         this.audioManager.stopSound('audio/jump.mp3');
+    }
+
+    die() {
+        this.playDeathAnimationOnce();
+        this.isDeadFlag = true;
+        this.stopWalkSound();
+        this.stopJumpSound();
+        this.audioManager.stopSound('audio/music.mp3');
+        this.audioManager.playSound('audio/kikiriki.mp3', false, 0.3);
+        this.isFrozen = true;
+        this.showLoseMenuAfterDelay();
+    }
+
+    showLoseMenuAfterDelay() {
+        setTimeout(() => {
+            this.world.gameIsPaused = true;
+            document.getElementById('lose-menu').style.display = 'block';
+        }, 1500);
+    }
+
+    playDeathAnimationOnce() {
+        if (!this.deathAnimationStarted) {
+            this.deathAnimationStarted = true;
+            this.currentDeathImage = 0;
+            this.deathInterval = setGameInterval(() => {
+                if (this.currentDeathImage < this.IMAGES_DEAD.length) {
+                    let path = this.IMAGES_DEAD[this.currentDeathImage];
+                    this.img = this.imageCache[path];
+                    this.currentDeathImage++;
+                } else {
+                    clearInterval(this.deathInterval);
+                }
+            }, 200); 
+        }
     }
 }
