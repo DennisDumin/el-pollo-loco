@@ -1,17 +1,11 @@
 class Character extends MovableObject {
-
     width = 120;
     height = 240;
     y = 195;
     speed = 6;
-    walkSound = new Audio('audio/running.mp3');
-    jumpSound = new Audio('audio/jump.mp3');
-    hurtSound = new Audio('audio/hurt.mp3');
-    snoreSound = new Audio('audio/snore.mp3');
     bottlesCollected = 0;
     isFrozen = false;
     isWalkingSoundPlaying = false;
-    isSoundLoaded = false;
 
     IMAGES_WALKING = [
         'img/2_character_pepe/2_walk/W-21.png',
@@ -76,9 +70,10 @@ class Character extends MovableObject {
         'img/2_character_pepe/1_idle/long_idle/I-20.png',
     ];
     world;
+    audioManager = AudioManager.getInstance();
 
     constructor(world) {
-        super().loadImage('img/2_character_pepe/1_idle/idle/I-1.png')
+        super().loadImage('img/2_character_pepe/1_idle/idle/I-1.png');
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_DEAD);
@@ -94,10 +89,6 @@ class Character extends MovableObject {
         this.offsetWidth = 65;
         this.offsetX = 30;
         this.offsetY = 93;
-        this.walkSound.volume = 0.3;
-        this.hurtSound.volume = 0.3;
-        this.snoreSound.volume = 0.3;
-        this.jumpSound.volume = 0.3;
     }
 
     animate() {
@@ -113,7 +104,6 @@ class Character extends MovableObject {
 
     updateMovement() {
         if (this.isFrozen || this.world.gameWon) {
-            this.stopWalkSound();
             return;
         }
         let isMoving = false;
@@ -158,7 +148,7 @@ class Character extends MovableObject {
 
     handleHurtAnimation() {
         if (!this.hurtSoundPlayed) {
-            this.hurtSound.play();
+            this.audioManager.playSound('audio/hurt.mp3');
             this.hurtSoundPlayed = true;
         }
         this.resetIdleState();
@@ -170,13 +160,14 @@ class Character extends MovableObject {
     }
 
     resetIdleState() {
-        this.snoreSound.pause();
+        this.audioManager.stopSound('audio/snore.mp3');
         this.idleTime = null;
     }
 
     stopCharacter() {
-        clearGameInterval(this.movementInterval);
-        clearGameInterval(this.animationInterval);
+        clearInterval(this.movementInterval);
+        clearInterval(this.animationInterval);
+        this.stopWalkSound();
     }
 
     jump() {
@@ -196,7 +187,7 @@ class Character extends MovableObject {
         }
         else if (Date.now() - this.idleTime >= longIdleTime && !this.isFrozen && !this.world.gameWon) {
             this.playAnimation(this.IMAGES_LONG_IDLE, 15);
-            this.snoreSound.play();
+            this.audioManager.playSound('audio/snore.mp3');
             return;
         }
         this.playAnimation(this.IMAGES_IDLE, 5);
@@ -204,42 +195,34 @@ class Character extends MovableObject {
 
     playWalkSound() {
         if (!this.isWalkingSoundPlaying) {
-            this.walkSound.addEventListener('canplaythrough', () => {
-                this.isWalkingSoundPlaying = true;
-                this.walkSound.loop = true;
-                this.walkSound.volume = 0.3;
-    
-                let playPromise = this.walkSound.play();
-                if (playPromise !== undefined) {
-                    playPromise
-                        .catch((error) => {
-                            console.warn(`⚠️ Walk sound play failed:`, error);
-                        });
-                }
-            });
-            this.walkSound.load();
+            this.audioManager.playSound('audio/running.mp3', true, 0.3)
+                .then(() => {
+                    this.isWalkingSoundPlaying = true;
+                })
+                .catch(error => {
+                    console.warn(` Walk sound play failed:`, error);
+                });
         }
     }
     
     stopWalkSound() {
         if (this.isWalkingSoundPlaying) {
-            this.walkSound.pause();
-            this.walkSound.currentTime = 0;
+            this.audioManager.stopSound('audio/running.mp3');
             this.isWalkingSoundPlaying = false;
         }
     }
 
     playJumpSound() {
-        this.jumpSound.pause();
-        this.jumpSound.currentTime = 0;
-        this.jumpSound.volume = 0.3;
-        this.jumpSound.play()
+        this.audioManager.playSound('audio/jump.mp3')
+            .then(() => {
+                this.isSoundLoaded = true;
+            })
+            .catch(error => {
+                console.warn(` Jump sound play failed:`, error);
+            });
     }
-
+    
     stopJumpSound() {
-        if (!this.jumpSound.paused) {
-            this.jumpSound.pause();
-            this.jumpSound.currentTime = 0;
-        }
+        this.audioManager.stopSound('audio/jump.mp3');
     }
 }

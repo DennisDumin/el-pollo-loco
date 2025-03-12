@@ -3,7 +3,7 @@ class ChickenTiny extends MovableObject {
     y = 385;
     width = 35;
     height = 35;
-    chickenDeath = new Audio('audio/bird.mov');
+    audioManager = AudioManager.getInstance();
     IMAGES_WALKING = [
         'img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
         'img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
@@ -24,14 +24,13 @@ class ChickenTiny extends MovableObject {
         this.offsetX = 1;
         this.offsetY = -3;
         this.isDead = false;
-        this.chickenDeath.volume = 0.3;
     }
 
     hit() {
         if (!this.isDead) {
             this.isDead = true;
             this.stopMotion();
-            this.chickenDeath.play();
+            this.audioManager.playSound('audio/bird.mov', false, 0.3);
             this.showDeathAnimation();
         }
     }

@@ -1,13 +1,10 @@
-popSound = new Audio('audio/pop.mp3');
-
 function playPopSound() {
-    popSound.currentTime = 0;
-    popSound.play();
+    audioManager.playSound('audio/pop.mp3');
 }
 
 function startGame() {
     playPopSound();
-    levelMusic.play();
+    audioManager.playSound('audio/music.mp3', true, 0.3);
     let startscreen = document.getElementById('startscreen');
     let canvas = document.getElementById('canvas');
     startscreen.classList.add('fade-out');

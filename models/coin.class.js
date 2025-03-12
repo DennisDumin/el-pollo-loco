@@ -11,7 +11,7 @@ class Coin extends MovableObject {
         speed: 0.2
     };
 
-    collectSound = new Audio('audio/coin.mov');
+    audioManager = AudioManager.getInstance();
 
     constructor(x, y) {
         super().loadImage(this.IMAGES_COIN[0]);
@@ -57,7 +57,7 @@ class Coin extends MovableObject {
     }
 
     playCollectionSound() {
-        this.collectSound.play();
+        this.audioManager.playSound('audio/coin.mov');
     }
 
     removeFromGame() {

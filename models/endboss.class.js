@@ -11,7 +11,7 @@ class Endboss extends MovableObject {
     attackSpeed = 9;
     attackDistance = 275;
     attackJumpHeight = 25;
-    alarmSound = new Audio('audio/fight.wav');
+    audioManager = AudioManager.getInstance();
 
     IMAGES_WALKING = [
         'img/4_enemie_boss_chicken/1_walk/G1.png',
@@ -62,8 +62,7 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
         this.x = 4000;
-        this.alarmSound.volume = 0.3;
-        this.speed = 2;
+        this.speed = 16;
         this.animate();
         this.applyGravity();
         this.offsetHeight = 300;
@@ -108,63 +107,138 @@ class Endboss extends MovableObject {
     checkActivation(characterX) {
         if (characterX > 3700 && !this.isActivated) {
             this.isActivated = true;
-            levelMusic.pause();
-            this.alarmSound.play();
-            this.alarmSound.onended = () => {
-                levelMusic.play();
-            };
+            this.audioManager.stopSound('audio/music.mp3');
+            this.audioManager.playSound('audio/fight.wav', false, 0.3).then(() => {
+                this.audioManager.playSound('audio/music.mp3', true, 0.3);
+            });
         }
     }
 
     startAlertSequence() {
-        levelMusic.pause();
-        this.alarmSound.play();
+        this.pauseLevelMusic();
         this.world.character.isFrozen = true;
+        const fightAudio = this.prepareAlertAudio();
+        this.setupAlertAnimation(fightAudio);
+        this.setupAudioEndHandling(fightAudio);
+        this.playFightAudio(fightAudio);
+    }
+    
+    pauseLevelMusic() {
+        const levelAudio = this.audioManager.getAudio('audio/music.mp3');
+        levelAudio.pause();
+    }
+    
+    prepareAlertAudio() {
+        const fightAudio = new Audio('audio/fight.wav');
+        fightAudio.volume = 0.3;
+        fightAudio.currentTime = 0;
+        return fightAudio;
+    }
+    
+    setupAlertAnimation(fightAudio) {
+        if (this.alertInterval) clearInterval(this.alertInterval);
+        this.startStandardAnimation();
+        this.setupAnimationTiming(fightAudio);
+    }
+    
+    startStandardAnimation() {
+        const estimatedDuration = 6500;
+        const totalFrames = this.IMAGES_ALERT.length;
+        const frameTime = Math.floor(estimatedDuration / totalFrames);
+        
+        this.startAnimationSequence(frameTime);
+    }
+    
+    startAnimationSequence(frameTime) {
         let alertIndex = 0;
         this.alertInterval = setGameInterval(() => {
             if (alertIndex < this.IMAGES_ALERT.length) {
                 this.img = this.imageCache[this.IMAGES_ALERT[alertIndex]];
                 alertIndex++;
-            } else {
-                clearInterval(this.alertInterval);
             }
-        }, 400);
-        this.alarmSound.onended = () => {
-            levelMusic.play();
-            this.world.character.isFrozen = false;
-            this.hasStartedMoving = true;
-            this.startAttackSequence();
+        }, frameTime);
+    }
+    
+    setupAnimationTiming(fightAudio) {
+        fightAudio.addEventListener('loadedmetadata', () => {
+            this.adjustAnimationTiming(fightAudio.duration * 1000);
+        }, {once: true});
+    }
+    
+    adjustAnimationTiming(actualDuration) {
+        const estimatedDuration = 6500;
+        if (Math.abs(actualDuration - estimatedDuration) > 1000) {
+            this.restartAnimation(actualDuration);
+        }
+    }
+    
+    restartAnimation(duration) {
+        clearInterval(this.alertInterval);
+        const frameTime = Math.floor(duration / this.IMAGES_ALERT.length);
+        this.startAnimationSequence(frameTime);
+    }
+    
+    setupAudioEndHandling(fightAudio) {
+        fightAudio.onended = () => {
+            this.endAlertPhase();
         };
+    }
+    
+    endAlertPhase() {
+        clearInterval(this.alertInterval);
+        this.resumeLevelMusic();
+        this.world.character.isFrozen = false;
+        this.hasStartedMoving = true;
+        this.startAttackSequence();
+    }
+    
+    resumeLevelMusic() {
+        const levelAudio = this.audioManager.getAudio('audio/music.mp3');
+        levelAudio.play().catch(err => {
+            console.warn("Error resuming level music:", err);
+            this.audioManager.playSound('audio/music.mp3', true, 0.3);
+        });
+    }
+    
+    playFightAudio(fightAudio) {
+        const playPromise = fightAudio.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch(err => {
+                console.error("Error playing fight audio:", err);
+                this.endAlertPhase();
+            });
+        }
     }
 
     takeDamage(amount) {
-        if (this.isHurt || this.energy === 0) return;
-        this.energy = Math.max(0, this.energy - amount);
-        this.lastHit = Date.now();
-        this.isHurt = true;
-        this.isAttacking = false;
-        this.speed = 0; 
-        clearInterval(this.animationInterval); 
-        this.world.statusBarEndboss.setPercentage(this.energy);
-        clearInterval(this.attackInterval); 
-        this.playAnimation(this.IMAGES_HURT, 0.5);
-        setTimeout(() => {
-            this.isHurt = false;
-            if (this.energy > 0) {
-                this.startAttackSequence();
-            } else {
-                this.die();
-            }
-        }, 1000);
-    }    
+                if(this.isHurt || this.energy === 0) return;
+            this.energy = Math.max(0, this.energy - amount);
+            this.lastHit = Date.now();
+            this.isHurt = true;
+            this.isAttacking = false;
+            this.speed = 0;
+            clearInterval(this.animationInterval);
+            this.world.statusBarEndboss.setPercentage(this.energy);
+            clearInterval(this.attackInterval);
+            this.playAnimation(this.IMAGES_HURT, 0.5);
+            setTimeout(() => {
+                this.isHurt = false;
+                if (this.energy > 0) {
+                    this.startAttackSequence();
+                } else {
+                    this.die();
+                }
+            }, 1000);
+        }
 
     startAttackSequence() {
-        if (this.isDead || this.isAttacking || this.isHurt) return;
-        clearInterval(this.animationInterval); 
+            if(this.isDead || this.isAttacking || this.isHurt) return;
+        clearInterval(this.animationInterval);
         this.isAttacking = true;
-        this.speed = 0; 
-        this.speedY = this.attackJumpHeight; 
-        this.speed = this.attackSpeed; 
+        this.speed = 0;
+        this.speedY = this.attackJumpHeight;
+        this.speed = this.attackSpeed;
         if (this.world.character.x < this.x) {
             this.otherDirection = false;
         } else {
@@ -174,7 +248,7 @@ class Endboss extends MovableObject {
         let attackStartX = this.x;
         this.attackInterval = setGameInterval(() => {
             if (this.otherDirection) {
-                this.x += this.speed; 
+                this.x += this.speed;
             } else {
                 this.x -= this.speed;
             }
@@ -187,14 +261,14 @@ class Endboss extends MovableObject {
 
     stopAttack() {
         this.isAttacking = false;
-        this.speed = 2;
+        this.speed = 12;
     }
 
     die() {
         if (this.isDead) return;
         this.isDead = true;
         this.speed = 0;
-        this.stopMotion(); 
+        this.stopMotion();
         clearInterval(this.attackInterval);
         clearInterval(this.animationInterval);
         let deathIndex = 0;
@@ -206,9 +280,9 @@ class Endboss extends MovableObject {
                 clearInterval(this.deathInterval);
             }
         }, 400);
-        this.world.freezeGame(); 
+        this.world.freezeGame();
         setTimeout(() => {
-            this.world.showWinMenu(); 
+            this.world.showWinMenu();
         }, 2000);
     }
 }

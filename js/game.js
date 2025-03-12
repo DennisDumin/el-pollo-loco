@@ -1,11 +1,8 @@
 let canvas;
 let world;
-let levelMusic = new Audio('audio/music.mp3');
-popSound = new Audio('audio/pop.mp3');
-levelMusic.loop = true;
-levelMusic.volume = 0.3;
 let keyboard = new Keyboard();
 let gameIntervals = [];
+let audioManager = AudioManager.getInstance();
 
 function init() {
     canvas = document.getElementById('canvas');
@@ -16,12 +13,11 @@ function startNewGame() {
     showLoadingScreen();
     initLevel();
     world = new World(canvas, keyboard);
-    levelMusic.play(); 
+    audioManager.playSound('audio/music.mp3', true, 0.3);
     setTimeout(() => {
         console.log('🚀 Starting game...');
         hideLoadingScreen();
         setupEventListeners();
-        initializeGameSounds(); 
     }, 2000);
 }
 
@@ -35,8 +31,7 @@ const keyMap = {
 };
 
 function playPopSound() {
-    popSound.currentTime = 0;
-    popSound.play();
+    audioManager.playSound('audio/pop.mp3');
 }
 
 function handleKeyEvent(e, state) {
@@ -52,13 +47,19 @@ function restartGame() {
         if (world.endboss) {
             world.endboss.stopMotion();
         }
+        if (world.character) {
+            world.character.stopCharacter();
+        }
         world = null;
     }
     level1 = null;
     let winScreen = document.getElementById('win-menu');
     if (winScreen) winScreen.remove();
-    levelMusic.pause();
-    levelMusic.currentTime = 0;
+    
+    // Stop all audio
+    audioManager.stopSound('audio/music.mp3');
+    audioManager.stopSound('audio/win.ogg');
+    
     startNewGame();
 }
 
@@ -77,8 +78,7 @@ function clearAllGameIntervals() {
 function goToMenu() {
     playPopSound();
     clearAllGameIntervals();
-    levelMusic.pause();
-    levelMusic.currentTime = 0;
+    audioManager.stopSound('audio/music.mp3');
     let winScreen = document.getElementById('win-menu');
     if (winScreen) {
         winScreen.style.opacity = '0';
@@ -109,48 +109,4 @@ function showLoadingScreen() {
 
 function hideLoadingScreen() {
     document.getElementById('loading-screen').classList.remove('show');
-}
-
-function initializeGameSounds() {
-    console.log('🎵 Initializing game sounds...');
-
-    let sounds = [
-        world?.character?.walkSound,
-        world?.character?.jumpSound,
-        world?.character?.hurtSound,
-        world?.character?.snoreSound,
-        world?.character?.throwSound,
-        world?.endboss?.alarmSound,
-        world?.endboss?.deathSound,
-        world?.endboss?.hurtSound,
-        world?.collectSound,
-        world?.winSound,
-        ...(world?.level?.bottles?.map(bottle => bottle.collectSound) || []),
-        ...(world?.level?.coins?.map(coin => coin.collectSound) || []),
-        ...(world?.level?.enemies?.map(enemy => enemy.chickenDeath) || []),
-        ...(world?.level?.enemies?.map(enemy => enemy.breakSound) || [])
-    ].flat().filter(Boolean);
-    sounds.forEach(sound => playAndPause(sound));
-    console.log('✅ All game sounds initialized');
-}
-
-function playAndPause(sound) {
-    if (!sound) return;
-    let loaded = false;
-    sound.load();
-    let playPromise = sound.play();
-    if (playPromise !== undefined) {
-        playPromise
-            .then(() => {
-                console.log(`✅ Sound loaded: ${sound.src}`);
-                loaded = true;
-                if (loaded) {
-                    sound.pause(); 
-                    sound.currentTime = 0;
-                }
-            })
-            .catch((error) => {
-                console.warn(`⚠️ Sound preloading failed for ${sound.src}:`, error);
-            });
-    }
 }

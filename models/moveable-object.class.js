@@ -10,8 +10,7 @@ class MovableObject extends DrawableObject {
     energy = 100;
     lastHit = 0;
     idleTime = null;
-    breakSound = new Audio('audio/glass.mp3');
-    throwSound = new Audio('audio/throw.mp3');
+    audioManager = AudioManager.getInstance();
 
     constructor() {
         super();
@@ -144,8 +143,6 @@ class MovableObject extends DrawableObject {
     }
 
     playThrowSound() {
-        this.throwSound.currentTime = 0;
-        this.throwSound.volume = 0.3;
-        this.throwSound.play();
+        this.audioManager.playSound('audio/throw.mp3', false, 0.3);
     }
 }

@@ -5,18 +5,16 @@ class World {
     canvas;
     ctx;
     camera_x = 0;
-    collectSound = new Audio('audio/bottle.mp3');
     statusBarHealth = new StatusBarHealth();
     statusBarCoin = new StatusBarCoin();
     statusBarBottle = new StatusBarBottle();
     statusBarEndboss = new StatusBarEndboss();
     throwableObjects = [];
-    winSound = new Audio('audio/win.ogg');
+    audioManager = AudioManager.getInstance();
+    gameWon = false;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
-        this.collectSound.volume = 0.3;
-        this.winSound.volume = 0.5;
         this.canvas = canvas;
         this.keyboard = keyboard;
         this.character = new Character(this);
@@ -55,6 +53,7 @@ class World {
             endboss.startAlertSequence();
             this.statusBarEndboss.setPercentage(100);
             this.statusBarEndboss.visible = true;
+            this.character.stopWalkSound();
             this.character.isFrozen = true;
         }
     }
@@ -110,7 +109,7 @@ class World {
         if (this.statusBarCoin.currentCoins >= 5) {
             this.character.bottlesCollected++;
             this.statusBarBottle.addBottles();
-            this.collectSound.play();
+            this.audioManager.playSound('audio/bottle.mp3');
             this.statusBarCoin.currentCoins = 0;
             this.statusBarCoin.setPercentage(0);
         }
@@ -287,9 +286,10 @@ class World {
     }
 
     showWinMenu() {
-        levelMusic.pause();
-        levelMusic.currentTime = 0; 
-        this.winSound.play(); 
+        this.audioManager.stopSound('audio/music.mp3');
+        this.audioManager.playSound('audio/win.ogg', false, 0.5);
+        this.gameWon = true;
+        
         let winScreen = document.createElement('div');
         winScreen.id = "win-menu";
         winScreen.innerHTML = `
@@ -306,5 +306,4 @@ class World {
         this.level.enemies.forEach(enemy => enemy.speed = 0);
         this.throwableObjects = [];
     }
-    
 }

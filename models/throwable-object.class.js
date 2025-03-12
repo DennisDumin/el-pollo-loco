@@ -32,7 +32,7 @@ class ThrowableObject extends MovableObject {
         this.offsetWidth = 50;
         this.offsetX = 10;
         this.offsetY = 5;
-        this.breakSound.volume = 0.3;
+        // audioManager ist bereits in der MovableObject-Klasse definiert
     }
 
     startBottleAnimation() {
@@ -66,7 +66,7 @@ class ThrowableObject extends MovableObject {
     }
 
     playBreakSound() {
-        this.breakSound.play();
+        this.audioManager.playSound('audio/glass.mp3', false, 0.3);
     }
 
     stopMotion() {
@@ -75,7 +75,7 @@ class ThrowableObject extends MovableObject {
         clearInterval(this.splashInterval); 
     }
 
-    playSplashAnimation() {
+    playSplashAnimation(callback) {
         this.playBreakSound();
         this.stopMotion();
         this.speedY = 0;
@@ -89,6 +89,7 @@ class ThrowableObject extends MovableObject {
             } else {
                 clearInterval(this.splashInterval);
                 this.removeFromGame();
+                if (callback) callback();
             }
         }, 100);
     }
