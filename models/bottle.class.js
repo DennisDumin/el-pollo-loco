@@ -1,9 +1,7 @@
 class Bottle extends MovableObject {
 
     y = 355;
-  
-    collectSound = new Audio('audio/bottle.mp3');
-  
+    
     IMAGES = [
       'img/6_salsa_bottle/1_salsa_bottle_on_ground.png',
       'img/6_salsa_bottle/2_salsa_bottle_on_ground.png',
@@ -27,9 +25,7 @@ class Bottle extends MovableObject {
     }
   
     playBottleCollectSound() {
-      this.collectSound.currentTime = 0;
-      this.collectSound.volume = 0.3;
-      this.collectSound.play();
+        AudioManager.getInstance().playSound('audio/bottle.mp3', false, 0.3);
     }
   
     removeFromGame() {

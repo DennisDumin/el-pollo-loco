@@ -26,7 +26,10 @@ const keyMap = {
 };
 
 function playPopSound() {
-    audioManager.playSound('audio/pop.mp3');
+    audioManager.stopSound('audio/pop.mp3');
+    setTimeout(() => {
+        audioManager.playSound('audio/pop.mp3', false, 0.3);
+    }, 10);
 }
 
 function handleKeyEvent(e, state) {

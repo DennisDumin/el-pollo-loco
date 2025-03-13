@@ -149,7 +149,7 @@ class World {
     handleEndbossHit(bottle, bottleIndex, endboss) {
         if (!endboss.isDead && this.throwableObjects[bottleIndex] && !bottle.collisionDetected) {
             bottle.collisionDetected = true;
-    
+
             if (Date.now() - endboss.lastHit > 500) {
                 endboss.takeDamage(20);
                 this.statusBarEndboss.setPercentage(endboss.energy);
@@ -169,32 +169,52 @@ class World {
     }
 
     checkJumpOnEnemy() {
-        let enemiesToDefeat = [];
-        this.level.enemies.forEach((enemy) => {
-            if (!enemy.isDead && this.isJumpingOnEnemy(enemy)) {
-                enemiesToDefeat.push(enemy);
-            }
-        });
+        const enemiesToDefeat = this.findEnemiesBeingJumpedOn();
         if (enemiesToDefeat.length > 0) {
-            enemiesToDefeat.forEach(enemy => {
-                enemy.hit();
-                enemy.stopMotion();
-            });
-            this.character.speedY = 20;
+            this.applyJumpEffects(enemiesToDefeat);
         }
     }
-    
+
+    findEnemiesBeingJumpedOn() {
+        return this.level.enemies.filter(enemy =>
+            !enemy.isDead && this.isJumpingOnEnemy(enemy)
+        );
+    }
+
+    applyJumpEffects(enemies) {
+        const isTinyChicken = enemies.some(enemy => enemy instanceof ChickenTiny);
+        this.character.speedY = isTinyChicken ? 20 : 20;
+
+        enemies.forEach(enemy => {
+            enemy.hit();
+            enemy.stopMotion();
+        });
+    }
+
     isJumpingOnEnemy(enemy) {
         let characterBottom = this.character.y + this.character.height;
         let enemyTop = enemy.y;
-        let jumpThreshold = enemy instanceof ChickenTiny ? enemy.height * 0.4 : enemy.height * 0.6;
-        return (
-            this.character.speedY < 0 && 
-            characterBottom >= enemyTop && 
-            characterBottom <= enemyTop + jumpThreshold && 
-            this.character.x + this.character.width >= enemy.x && 
-            this.character.x <= enemy.x + enemy.width
-        );
+        let { jumpThreshold, extraTolerance } = this.getJumpParameters(enemy);
+        return this.checkHorizontalOverlap(enemy, extraTolerance) &&
+            this.checkVerticalCollision(characterBottom, enemyTop, jumpThreshold, extraTolerance);
+    }
+
+    getJumpParameters(enemy) {
+        if (enemy instanceof ChickenTiny) {
+            return { jumpThreshold: enemy.height * 0.7, extraTolerance: 5 };
+        }
+        return { jumpThreshold: enemy.height * 0.6, extraTolerance: 0 };
+    }
+
+    checkHorizontalOverlap(enemy, extraTolerance) {
+        return this.character.x + this.character.width >= enemy.x + extraTolerance &&
+            this.character.x <= enemy.x + enemy.width - extraTolerance;
+    }
+
+    checkVerticalCollision(characterBottom, enemyTop, jumpThreshold, extraTolerance) {
+        return this.character.speedY < 0 &&
+            characterBottom >= enemyTop - extraTolerance &&
+            characterBottom <= enemyTop + jumpThreshold + extraTolerance;
     }
 
     handleChickenHit(bottle, bottleIndex, chicken) {
@@ -289,7 +309,7 @@ class World {
         this.audioManager.stopSound('audio/music.mp3');
         this.audioManager.playSound('audio/win.ogg', false, 0.5);
         this.gameWon = true;
-        
+
         let winScreen = document.createElement('div');
         winScreen.id = "win-menu";
         winScreen.innerHTML = `
@@ -297,7 +317,7 @@ class World {
             <button onclick="restartGame()" class="win-button">New Game</button>
             <button onclick="goToMenu()" class="win-button">Menu</button>
         `;
-    
+
         document.body.appendChild(winScreen);
     }
 

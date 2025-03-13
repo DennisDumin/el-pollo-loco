@@ -107,20 +107,31 @@ class Endboss extends MovableObject {
     checkActivation(characterX) {
         if (characterX > 3700 && !this.isActivated) {
             this.isActivated = true;
-            this.audioManager.stopSound('audio/music.mp3');
-            this.audioManager.playSound('audio/fight.wav', false, 0.3).then(() => {
-                this.audioManager.playSound('audio/music.mp3', true, 0.3);
-            });
+            this.startAlertSequence();
         }
     }
 
     startAlertSequence() {
         this.pauseLevelMusic();
         this.world.character.isFrozen = true;
-        const fightAudio = this.prepareAlertAudio();
+        if (world && world.character) {
+            world.character.stopWalkSound();
+            world.character.stopJumpSound();
+        }
+        const fightAudio = this.audioManager.getAudio('audio/fight.wav');
+        fightAudio.loop = false;
+        fightAudio.volume = 0.3;
         this.setupAlertAnimation(fightAudio);
-        this.setupAudioEndHandling(fightAudio);
-        this.playFightAudio(fightAudio);
+        fightAudio.onended = () => {
+            this.endAlertPhase();
+        };
+        const playPromise = fightAudio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(err => {
+                console.error("Error playing fight audio:", err);
+                setTimeout(() => this.endAlertPhase(), 3000);
+            });
+        }
     }
     
     pauseLevelMusic() {
@@ -128,28 +139,12 @@ class Endboss extends MovableObject {
         levelAudio.pause();
     }
     
-    prepareAlertAudio() {
-        const fightAudio = new Audio('audio/fight.wav');
-        fightAudio.volume = 0.3;
-        fightAudio.currentTime = 0;
-        return fightAudio;
-    }
-    
     setupAlertAnimation(fightAudio) {
         if (this.alertInterval) clearInterval(this.alertInterval);
-        this.startStandardAnimation();
-        this.setupAnimationTiming(fightAudio);
-    }
-    
-    startStandardAnimation() {
-        const estimatedDuration = 6500;
+        const estimatedDuration = 6500; 
         const totalFrames = this.IMAGES_ALERT.length;
         const frameTime = Math.floor(estimatedDuration / totalFrames);
         
-        this.startAnimationSequence(frameTime);
-    }
-    
-    startAnimationSequence(frameTime) {
         let alertIndex = 0;
         this.alertInterval = setGameInterval(() => {
             if (alertIndex < this.IMAGES_ALERT.length) {
@@ -157,35 +152,26 @@ class Endboss extends MovableObject {
                 alertIndex++;
             }
         }, frameTime);
-    }
-    
-    setupAnimationTiming(fightAudio) {
         fightAudio.addEventListener('loadedmetadata', () => {
-            this.adjustAnimationTiming(fightAudio.duration * 1000);
+            const actualDuration = fightAudio.duration * 1000;
+            if (Math.abs(actualDuration - estimatedDuration) > 1000) {
+                clearInterval(this.alertInterval);
+                const adjustedFrameTime = Math.floor(actualDuration / totalFrames);
+                alertIndex = 0; 
+                this.alertInterval = setGameInterval(() => {
+                    if (alertIndex < this.IMAGES_ALERT.length) {
+                        this.img = this.imageCache[this.IMAGES_ALERT[alertIndex]];
+                        alertIndex++;
+                    }
+                }, adjustedFrameTime);
+            }
         }, {once: true});
     }
     
-    adjustAnimationTiming(actualDuration) {
-        const estimatedDuration = 6500;
-        if (Math.abs(actualDuration - estimatedDuration) > 1000) {
-            this.restartAnimation(actualDuration);
-        }
-    }
-    
-    restartAnimation(duration) {
-        clearInterval(this.alertInterval);
-        const frameTime = Math.floor(duration / this.IMAGES_ALERT.length);
-        this.startAnimationSequence(frameTime);
-    }
-    
-    setupAudioEndHandling(fightAudio) {
-        fightAudio.onended = () => {
-            this.endAlertPhase();
-        };
-    }
-    
     endAlertPhase() {
-        clearInterval(this.alertInterval);
+        if (this.alertInterval) {
+            clearInterval(this.alertInterval);
+        }
         this.resumeLevelMusic();
         this.world.character.isFrozen = false;
         this.hasStartedMoving = true;
@@ -193,47 +179,43 @@ class Endboss extends MovableObject {
     }
     
     resumeLevelMusic() {
-        const levelAudio = this.audioManager.getAudio('audio/music.mp3');
-        levelAudio.play().catch(err => {
-            console.warn("Error resuming level music:", err);
-            this.audioManager.playSound('audio/music.mp3', true, 0.3);
-        });
-    }
-    
-    playFightAudio(fightAudio) {
-        const playPromise = fightAudio.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.catch(err => {
-                console.error("Error playing fight audio:", err);
-                this.endAlertPhase();
+        const audioManager = AudioManager.getInstance();
+        if (!audioManager.isMuted) {
+            const levelAudio = audioManager.getAudio('audio/music.mp3');
+            levelAudio.loop = true;
+            levelAudio.volume = 0.3;
+            levelAudio.play().catch(err => {
+                console.warn("Error resuming level music:", err);
             });
+        }
+        if (audioManager.activeSounds) {
+            audioManager.activeSounds.add('audio/music.mp3');
         }
     }
 
     takeDamage(amount) {
-                if(this.isHurt || this.energy === 0) return;
-            this.energy = Math.max(0, this.energy - amount);
-            this.lastHit = Date.now();
-            this.isHurt = true;
-            this.isAttacking = false;
-            this.speed = 0;
-            clearInterval(this.animationInterval);
-            this.world.statusBarEndboss.setPercentage(this.energy);
-            clearInterval(this.attackInterval);
-            this.playAnimation(this.IMAGES_HURT, 0.5);
-            setTimeout(() => {
-                this.isHurt = false;
-                if (this.energy > 0) {
-                    this.startAttackSequence();
-                } else {
-                    this.die();
-                }
-            }, 1000);
-        }
+        if (this.isHurt || this.energy === 0) return;
+        this.energy = Math.max(0, this.energy - amount);
+        this.lastHit = Date.now();
+        this.isHurt = true;
+        this.isAttacking = false;
+        this.speed = 0;
+        clearInterval(this.animationInterval);
+        this.world.statusBarEndboss.setPercentage(this.energy);
+        clearInterval(this.attackInterval);
+        this.playAnimation(this.IMAGES_HURT, 0.5);
+        setTimeout(() => {
+            this.isHurt = false;
+            if (this.energy > 0) {
+                this.startAttackSequence();
+            } else {
+                this.die();
+            }
+        }, 1000);
+    }
 
     startAttackSequence() {
-            if(this.isDead || this.isAttacking || this.isHurt) return;
+        if (this.isDead || this.isAttacking || this.isHurt) return;
         clearInterval(this.animationInterval);
         this.isAttacking = true;
         this.speed = 0;
@@ -261,13 +243,17 @@ class Endboss extends MovableObject {
 
     stopAttack() {
         this.isAttacking = false;
-        this.speed = 12;
+        this.speed = 15;
     }
 
     die() {
         if (this.isDead) return;
         this.isDead = true;
         this.speed = 0;
+        if (world && world.character) {
+            world.character.stopWalkSound();
+            world.character.stopJumpSound();
+        }
         this.stopMotion();
         clearInterval(this.attackInterval);
         clearInterval(this.animationInterval);

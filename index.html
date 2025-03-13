@@ -91,6 +91,17 @@
         <button class="win-button" onclick="restartGame()">New Game</button>
         <button class="win-button" onclick="goToMenu()">Menu</button>
     </div>
+
+    <!-- Mute -->
+    <div id="mute-button" onclick="AudioManager.getInstance().toggleMute()">
+        <img id="mute-icon" src="img/menu/volume.png" alt="Mute/Unmute">
+    </div>
+
+    <!-- Turn Device -->
+    <div id="rotate-device-message">
+        <img src="img/menu/rotation.png" alt="Rotate your device">
+        <p>Turn your device to play</p>
+    </div>
 </body>
 
 </html>

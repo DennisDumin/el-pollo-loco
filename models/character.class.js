@@ -235,6 +235,16 @@ class Character extends MovableObject {
         this.isDeadFlag = true;
         this.stopWalkSound();
         this.stopJumpSound();
+        if (this.world && this.world.endboss) {
+            this.world.endboss.stopMotion();
+        }
+        if (this.world && this.world.level && this.world.level.enemies) {
+            this.world.level.enemies.forEach(enemy => {
+                if (enemy.stopMotion) {
+                    enemy.stopMotion();
+                }
+            });
+        }
         this.audioManager.stopSound('audio/music.mp3');
         this.audioManager.playSound('audio/kikiriki.mp3', false, 0.3);
         this.isFrozen = true;
