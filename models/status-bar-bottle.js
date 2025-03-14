@@ -9,6 +9,7 @@ class StatusBarBottle extends DrawableObject {
     ];
 
     currentBottles = 0;
+    maxBottles = 10;
 
     constructor() {
         super();
@@ -21,17 +22,30 @@ class StatusBarBottle extends DrawableObject {
     }
 
     setPercentage(percentage) {
-        let index = Math.min(this.IMAGES.length - 1, Math.floor((percentage / 100) * (this.IMAGES.length - 1)));
+        let mappedIndex = Math.floor((percentage / 100) * 5);
+        let index = Math.min(5, Math.max(0, mappedIndex));
         this.img = this.imageCache[this.IMAGES[index]];
     }
 
     addBottles() {
-        this.currentBottles = Math.min(this.currentBottles + 1, 10);
-        this.setPercentage(this.currentBottles * 10);
+        if (this.currentBottles < this.maxBottles) {
+            this.currentBottles++;
+            this.setPercentage(this.currentBottles * 10);
+            return true;
+        }
+        return false;
     }
 
     removeBottle() {
-        this.currentBottles = Math.max(this.currentBottles - 1, 0);
-        this.setPercentage(this.currentBottles * 10); 
+        if (this.currentBottles > 0) {
+            this.currentBottles--;
+            this.setPercentage(this.currentBottles * 10);
+            return true; 
+        }
+        return false;
+    }
+    
+    isMaxReached() {
+        return this.currentBottles >= this.maxBottles;
     }
 }

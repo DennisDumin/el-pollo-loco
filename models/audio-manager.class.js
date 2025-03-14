@@ -183,6 +183,13 @@ class AudioManager {
         audio.muted = this.isMuted;
         return audio;
     }
+
+    playOverlappingSound(src, volume = 0.3) {
+        const audio = new Audio(src);
+        audio.volume = volume;
+        audio.muted = this.isMuted;
+        return audio.play();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {

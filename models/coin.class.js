@@ -57,7 +57,7 @@ class Coin extends MovableObject {
     }
 
     playCollectionSound() {
-        this.audioManager.playSound('audio/coin.mov');
+        this.audioManager.playOverlappingSound('audio/coin.mov', 0.3);
     }
 
     removeFromGame() {

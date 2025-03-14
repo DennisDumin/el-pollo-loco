@@ -98,22 +98,26 @@ class World {
         if (this.character.bottlesCollected < 10) {
             bottle.pickUpBottle();
             this.character.bottlesCollected++;
-            this.statusBarBottle.addBottles(this.character.bottlesCollected);
+            this.statusBarBottle.addBottles();
         }
     }
 
-    handleCoinPickup(coin, index) {
-        coin.collect();
-        this.level.coins.splice(index, 1);
-        this.statusBarCoin.addCoins(1);
-        if (this.statusBarCoin.currentCoins >= 5) {
-            this.character.bottlesCollected++;
-            this.statusBarBottle.addBottles();
-            this.audioManager.playSound('audio/bottle.mp3');
-            this.statusBarCoin.currentCoins = 0;
-            this.statusBarCoin.setPercentage(0);
-        }
+ handleCoinPickup(coin, index) {
+    if (this.statusBarCoin.currentCoins >= 5 && this.statusBarBottle.isMaxReached()) {
+        return; 
     }
+    coin.collect();
+    this.level.coins.splice(index, 1);
+    this.statusBarCoin.addCoins(1);
+    if (this.statusBarCoin.currentCoins >= 5 && !this.statusBarBottle.isMaxReached()) {
+        if (this.statusBarBottle.addBottles()) {
+            this.character.bottlesCollected++;
+            this.audioManager.playOverlappingSound('audio/bottle.mp3');
+        }
+        this.statusBarCoin.currentCoins = 0;
+        this.statusBarCoin.setPercentage(0);
+    }
+}
 
     checkEnemyCollisions() {
         this.throwableObjects.forEach((bottle, bottleIndex) => {

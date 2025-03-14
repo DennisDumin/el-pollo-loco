@@ -20,18 +20,10 @@ class Bottle extends MovableObject {
     }
 
     pickUpBottle() {
-      this.playBottleCollectSound();
-      this.removeFromGame();
-    }
-  
-    playBottleCollectSound() {
-        AudioManager.getInstance().playSound('audio/bottle.mp3', false, 0.3);
-    }
-  
-    removeFromGame() {
+      AudioManager.getInstance().playOverlappingSound('audio/bottle.mp3', 0.3);
       const index = world.level.bottles.indexOf(this);
       if (index > -1) {
-        world.level.bottles.splice(index, 1);
+          world.level.bottles.splice(index, 1);
       }
-    }
+  }
   }
