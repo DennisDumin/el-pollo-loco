@@ -37,10 +37,7 @@ class AudioManager {
     }
     
     updateMuteUI() {
-        const muteIcon = document.getElementById('mute-icon');
-        if (muteIcon) {
-            muteIcon.src = this.isMuted ? 'img/menu/volume-muted.png' : 'img/menu/volume.png';
-        }
+        updateMuteButtonIcon();
     }
     
     stopAllSounds() {
@@ -198,5 +195,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function toggleGameAudio() {
-    AudioManager.getInstance().toggleMute();
+    audioManager.toggleMute();
+    updateMuteButtonIcon();
 }

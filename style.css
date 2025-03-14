@@ -114,18 +114,31 @@ h1 {
     justify-content: center;
     width: 100%;
     height: 40px;
-  }
-  
-  .control-line {
+}
+
+.control-line {
     width: 120px;
     height: auto;
-  }
+}
+
+.control-line img {
+    max-width: 20px;
+    max-height: 20px;
+    width: auto;
+    height: auto;
+    vertical-align: middle;
+}
 
 canvas {
     background-color: black;
     display: none;
     border-radius: 24px;
     border-width: 18px;
+}
+
+#canvas-container {
+    position: relative;
+    display: inline-block;
 }
 
 .fade-out {
@@ -192,27 +205,77 @@ canvas {
 #mute-button {
     position: absolute;
     top: 10px;
-    right: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+    cursor: pointer;
     width: 40px;
     height: 40px;
-    background-color: rgba(0,0,0,0.5);
-    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+#mute-icon {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
     cursor: pointer;
+    width: 40px;
+    height: 40px;
+    transition: all 0.3s ease;
+}
+
+#touch-controls {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 998;
+}
+
+#mobile-controls-left {
+    display: flex;
+    margin-left: 20px;
+}
+
+#mobile-controls-right {
+    display: flex;
+    margin-right: 20px;
+}
+
+.control-btn {
+    width: 60px;
+    height: 60px;
+    margin: 5px;
+    border-radius: 50%;
+    background-color: transparent; 
+    border: none;
+    pointer-events: auto;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 100;
-  }
-  
-  #mute-button img {
-    width: 24px;
-    height: 24px;
-  }
+    padding-top: 56px;
+}
+
+.control-btn img {
+    width: 40px;
+    height: 40px;
+    pointer-events: none;
+}
+
+#btn-throw img {
+    width: 55px;
+    height: 55px;
+}
 
 @keyframes fadeOut {
     from {
         opacity: 1;
     }
+
     to {
         opacity: 0;
         display: none;
@@ -223,6 +286,7 @@ canvas {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -259,39 +323,51 @@ canvas {
     align-items: center;
     z-index: 1000;
     display: none;
-  }
-  
-  #rotate-device-message img {
+}
+
+#rotate-device-message img {
     width: 80px;
     height: auto;
     margin-bottom: 20px;
     animation: rotate 2s infinite ease-in-out;
-  }
-  
-  @keyframes rotate {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(-90deg); }
-    100% { transform: rotate(-90deg); }
-  }
-  
-  @media screen and (orientation: portrait) {
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-90deg);
+    }
+
+    100% {
+        transform: rotate(-90deg);
+    }
+}
+
+@media screen and (orientation: portrait) {
     #rotate-device-message {
-      display: flex;
+        display: flex;
     }
-    
-    #canvas, #menu, #win-menu, #lose-menu, .mobile-buttons {
-      display: none !important;
-    }
-  }
-  
-  @media screen and (max-width: 768px) {
+
+    #canvas,
+    #menu,
+    #win-menu,
+    #lose-menu,
     .mobile-buttons {
-      display: flex !important;
+        display: none !important;
     }
-  }
-  
-  @media screen and (min-width: 769px) {
+}
+
+@media screen and (max-width: 768px) {
     .mobile-buttons {
-      display: none !important;
+        display: flex !important;
     }
-  }
+}
+
+@media screen and (min-width: 769px) {
+    .mobile-buttons {
+        display: none !important;
+    }
+}
