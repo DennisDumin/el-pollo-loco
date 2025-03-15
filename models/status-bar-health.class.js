@@ -1,5 +1,4 @@
 class StatusBarHealth extends DrawableObject {
-
     IMAGES = [
         'img/7_statusbars/1_statusbar/2_statusbar_health/orange/0.png',
         'img/7_statusbars/1_statusbar/2_statusbar_health/orange/20.png',
@@ -11,22 +10,51 @@ class StatusBarHealth extends DrawableObject {
 
     percentage = 100;
 
+    /**
+     * Creates a new health status bar
+     */
     constructor() {
         super();
         this.loadImages(this.IMAGES);
+        this.initializePosition();
+        this.setPercentage(100);
+    }
+
+    /**
+     * Initializes position and size
+     */
+    initializePosition() {
         this.x = 10;
         this.y = -5;
         this.width = 240;
         this.height = 64;
-        this.setPercentage(100);
-    };
+    }
 
+    /**
+     * Sets the percentage display
+     * @param {number} percentage - Value between 0 and 100
+     */
     setPercentage(percentage) {
         this.percentage = percentage;
         let path = this.IMAGES[this.resolveImageIndex()];
         this.img = this.imageCache[path];
-    };
+    }
 
+    /**
+     * Resolves the image index based on percentage
+     * @returns {number} Image index
+     */
+    resolveImageIndex() {
+        if (this.percentage == 100) {
+            return 5;
+        } 
+        return this.resolveImageIndex();
+    }
+
+    /**
+     * Gets image index by percentage ranges
+     * @returns {number} Image index
+     */
     resolveImageIndex() {
         if (this.percentage == 100) {
             return 5;

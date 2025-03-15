@@ -11,22 +11,40 @@ class StatusBarBottle extends DrawableObject {
     currentBottles = 0;
     maxBottles = 10;
 
+    /**
+     * Creates a new bottle status bar
+     */
     constructor() {
         super();
         this.loadImages(this.IMAGES);
+        this.initializePosition();
+        this.setPercentage(0);
+    }
+
+    /**
+     * Initializes position and size
+     */
+    initializePosition() {
         this.x = 10;
         this.y = 105;
         this.width = 240;
         this.height = 64;
-        this.setPercentage(0);
     }
 
+    /**
+     * Sets percentage of bottle status
+     * @param {number} percentage - Percentage value (0-100)
+     */
     setPercentage(percentage) {
         let mappedIndex = Math.floor((percentage / 100) * 5);
         let index = Math.min(5, Math.max(0, mappedIndex));
         this.img = this.imageCache[this.IMAGES[index]];
     }
 
+    /**
+     * Adds a bottle to the counter
+     * @returns {boolean} True if bottle was added
+     */
     addBottles() {
         if (this.currentBottles < this.maxBottles) {
             this.currentBottles++;
@@ -36,6 +54,10 @@ class StatusBarBottle extends DrawableObject {
         return false;
     }
 
+    /**
+     * Removes a bottle from the counter
+     * @returns {boolean} True if bottle was removed
+     */
     removeBottle() {
         if (this.currentBottles > 0) {
             this.currentBottles--;
@@ -45,6 +67,10 @@ class StatusBarBottle extends DrawableObject {
         return false;
     }
     
+    /**
+     * Checks if max bottle count is reached
+     * @returns {boolean} True if max bottles reached
+     */
     isMaxReached() {
         return this.currentBottles >= this.maxBottles;
     }

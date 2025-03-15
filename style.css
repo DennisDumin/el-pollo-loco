@@ -211,6 +211,7 @@ canvas {
     cursor: pointer;
     width: 40px;
     height: 40px;
+    display: none;
     transition: all 0.3s ease;
 }
 
