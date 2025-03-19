@@ -41,11 +41,7 @@ function setupCanvas() {
  * @returns {boolean} True if mobile device, false otherwise
  */
 function isMobileDevice() {
-    const hasTouchCapability = 'ontouchstart' in window ||
-        navigator.maxTouchPoints > 0 ||
-        navigator.msMaxTouchPoints > 0;
-    const mobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    return hasTouchCapability && mobileUserAgent;
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 }
 
 /**
@@ -252,18 +248,16 @@ function startNewGame() {
     audioManager.playSound('audio/music.mp3', true, 0.3);
     setupEventListeners();
     showTouchControlsIfMobile();
-    showMuteButton();  // Show the mute button when starting a new game
+    showMuteButton(); 
 }
 
 /**
  * Shows touch controls if on a mobile device
  */
 function showTouchControlsIfMobile() {
-    if (isMobileDevice()) {
-        const touchControls = document.getElementById('touch-controls');
-        if (touchControls) {
-            touchControls.style.display = 'flex';
-        }
+    const touchControls = document.getElementById('touch-controls');
+    if (touchControls) {
+        touchControls.style.display = 'flex';
     }
 }
 
