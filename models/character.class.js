@@ -114,7 +114,6 @@ class Character extends MovableObject {
         if (this.isFrozen || this.world.gameWon) {
             return;
         }
-
         let isMoving = this.handleHorizontalMovement();
         this.handleJumping();
         this.updateWalkSound(isMoving);
@@ -186,6 +185,9 @@ class Character extends MovableObject {
      * Updates character animation based on current state
      */
     updateAnimation() {
+        if (this.world.gameWon) {
+            return;
+        }
         if (this.isDead()) {
             this.handleDeathAnimation();
         } else if (this.isHurt()) {
@@ -253,6 +255,7 @@ class Character extends MovableObject {
         if (this.isFrozen || this.isAboveGround()) return;
         this.playJumpSound();
         this.speedY = 25;
+        this.currentImage = 0;
     }
 
     /**
@@ -275,7 +278,6 @@ class Character extends MovableObject {
             this.playLongIdleWithSound();
             return;
         } else {
-            // Normale Idle-Animation abspielen
             this.playAnimation(this.IMAGES_IDLE, 5);
         }
     }

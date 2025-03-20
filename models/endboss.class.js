@@ -453,7 +453,6 @@ class Endboss extends MovableObject {
      */
     die() {
         if (this.isDead) return;
-
         this.setDeathState();
         this.stopCharacterSounds();
         this.stopAllMovement();
@@ -509,6 +508,7 @@ class Endboss extends MovableObject {
      */
     handleLevelWin() {
         this.world.freezeGame();
+        this.world.character.stopCharacter();
         setTimeout(() => {
             this.world.showWinMenu();
         }, 2000);

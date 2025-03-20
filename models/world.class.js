@@ -23,11 +23,13 @@ class World {
         this.canvas = canvas;
         this.keyboard = keyboard;
         this.character = new Character(this);
-        this.draw();
         this.setWorld();
         this.statusBarEndboss.visible = false;
         this.run();
         this.endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
+        
+        // Start drawing with DrawableObject class
+        DrawableObject.drawWorld(this);
     }
 
     /**
@@ -312,32 +314,32 @@ class World {
         }
     }
 
-/**
- * Checks if the character is jumping on any enemy.
- * If so, it kills those enemies and returns true; otherwise false.
- * @returns {boolean} - True if the character jumped on one or more enemies, otherwise false.
- */
-checkJumpOnEnemy() {
-    let jumpedOnEnemy = false;
-    this.level.enemies.forEach((enemy) => {
-        if (!enemy.isDead && this.character.isAboveGround() && this.character.speedY < 0 && this.character.isColliding(enemy)) {
-            this.handleJumpOnEnemy(enemy);
-            jumpedOnEnemy = true;
+    /**
+     * Checks if the character is jumping on any enemy.
+     * If so, it kills those enemies and returns true; otherwise false.
+     * @returns {boolean} - True if the character jumped on one or more enemies, otherwise false.
+     */
+    checkJumpOnEnemy() {
+        let jumpedOnEnemy = false;
+        this.level.enemies.forEach((enemy) => {
+            if (!enemy.isDead && this.character.isAboveGround() && this.character.speedY < 0 && this.character.isColliding(enemy)) {
+                this.handleJumpOnEnemy(enemy);
+                jumpedOnEnemy = true;
+            }
+        });
+        if (jumpedOnEnemy) {
+            this.character.speedY = 20;
         }
-    });
-    if (jumpedOnEnemy) {
-        this.character.speedY = 20;
+        return jumpedOnEnemy;
     }
-    return jumpedOnEnemy;
-}
-
 
     /**
- * Handles character jumping on an enemy to defeat it.
- * @param {Object} enemy - The enemy being jumped on.
- */
+     * Handles character jumping on an enemy to defeat it.
+     * @param {Object} enemy - The enemy being jumped on.
+     */
     handleJumpOnEnemy(enemy) {
         enemy.hit();
+        this.character.currentImage = 0;
     }
 
     /**
@@ -357,159 +359,6 @@ checkJumpOnEnemy() {
                 this.throwableObjects.splice(bottleIndex, 1);
             }, 500);
         }
-    }
-
-    /**
-     * Draws the game world
-     */
-    draw() {
-        this.clearCanvas();
-        this.drawBackgroundElements();
-        this.drawStatusBars();
-        this.drawGameElements();
-        this.requestNextFrame();
-    }
-
-    /**
-     * Clears the canvas
-     */
-    clearCanvas() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-
-    /**
-     * Draws background elements
-     */
-    drawBackgroundElements() {
-        this.ctx.translate(this.camera_x, 0);
-        this.addObjectsToMap(this.level.backgroundLayer);
-        this.addObjectsToMap(this.level.clouds);
-        this.ctx.translate(-this.camera_x, 0);
-    }
-
-    /**
-     * Draws all status bars
-     */
-    drawStatusBars() {
-        this.drawHealthBar();
-        this.drawCoinBar();
-        this.drawBottleBar();
-        this.drawEndbossBarIfVisible();
-    }
-
-    /**
-     * Draws the health status bar
-     */
-    drawHealthBar() {
-        this.addToMap(this.statusBarHealth);
-        this.ctx.translate(this.camera_x, 0);
-        this.ctx.translate(-this.camera_x, 0);
-    }
-
-    /**
-     * Draws the coin status bar
-     */
-    drawCoinBar() {
-        this.addToMap(this.statusBarCoin);
-        this.ctx.translate(this.camera_x, 0);
-        this.ctx.translate(-this.camera_x, 0);
-    }
-
-    /**
-     * Draws the bottle status bar
-     */
-    drawBottleBar() {
-        this.addToMap(this.statusBarBottle);
-        this.ctx.translate(this.camera_x, 0);
-    }
-
-    /**
-     * Draws the endboss status bar if visible
-     */
-    drawEndbossBarIfVisible() {
-        if (this.statusBarEndboss.visible) {
-            this.ctx.translate(-this.camera_x, 0);
-            this.addToMap(this.statusBarEndboss);
-            this.ctx.translate(this.camera_x, 0);
-        }
-    }
-
-    /**
-     * Draws game elements like enemies, items and character
-     */
-    drawGameElements() {
-        this.addObjectsToMap(this.level.enemies);
-        this.addObjectsToMap(this.level.bottles);
-        this.addObjectsToMap(this.level.coins);
-        this.addObjectsToMap(this.throwableObjects);
-        this.addToMap(this.character);
-        this.ctx.translate(-this.camera_x, 0);
-    }
-
-    /**
-     * Requests the next animation frame
-     */
-    requestNextFrame() {
-        let self = this;
-        requestAnimationFrame(function () {
-            self.draw();
-        });
-    }
-
-    /**
-     * Adds multiple objects to the map
-     * @param {Array} objects - Array of objects to add to the map
-     */
-    addObjectsToMap(objects) {
-        if (!objects || !Array.isArray(objects)) {
-            return;
-        }
-        objects.forEach(o => {
-            if (!o || !o.img || !o.img.src) {
-                return;
-            }
-
-            try {
-                this.addToMap(o);
-            } catch (error) {
-            }
-        });
-    }
-
-    /**
-     * Adds a single object to the map
-     * @param {Object} mo - The object to add to the map
-     */
-    addToMap(mo) {
-        if (mo.otherDirection) {
-            this.flipImage(mo);
-        }
-        mo.draw(this.ctx);
-        mo.drawFrame(this.ctx);
-
-        if (mo.otherDirection) {
-            this.flipImageBack(mo);
-        }
-    }
-
-    /**
-     * Flips an image horizontally for left-facing objects
-     * @param {Object} mo - The object to flip
-     */
-    flipImage(mo) {
-        this.ctx.save();
-        this.ctx.translate(mo.width, 0);
-        this.ctx.scale(-1, 1);
-        mo.x = mo.x * -1;
-    }
-
-    /**
-     * Restores an image after flipping
-     * @param {Object} mo - The flipped object
-     */
-    flipImageBack(mo) {
-        mo.x = mo.x * -1;
-        this.ctx.restore();
     }
 
     /**
