@@ -43,10 +43,10 @@ class ChickenTiny extends MovableObject {
      * Sets collision detection offsets
      */
     setCollisionOffsets() {
-        this.offsetHeight = 50;
-        this.offsetWidth = 40;
+        this.offsetHeight = 30;
+        this.offsetWidth = 30;
         this.offsetX = 1;
-        this.offsetY = -3;
+        this.offsetY = 5;
     }
 
     /**

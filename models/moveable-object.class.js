@@ -2,7 +2,6 @@ class MovableObject extends DrawableObject {
     speed = 0.15;
     speedY = 0;
     acceleration = 2.5;
-    otherDirection = false;
     offsetX = 0;
     offsetY = 0;
     offsetWidth = 0;
@@ -21,15 +20,40 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Applies gravity to the object
-     */
+  * Applies gravity to the character only.
+  */
     applyGravity() {
+        this.gravityInterval = setGameInterval(() => {
+            if (this instanceof Character) {
+                if (this.isAboveGround() || this.speedY > 0) {
+                    this.y -= this.speedY;
+                    this.speedY -= this.acceleration;
+                }
+                this.getCharacterOnGround();
+            }
+        }, 1000 / 25);
+    }
+
+    /**
+     * Applies gravity to throwable objects.
+     */
+    applyGravityForThrowable() {
         this.gravityInterval = setGameInterval(() => {
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
             }
         }, 1000 / 25);
+    }
+
+    /**
+     * Resets character to ground level.
+     */
+    getCharacterOnGround() {
+        if (this.y > 195) {
+            this.y = 195
+            this.speedY = 0
+        }
     }
 
     /**
@@ -67,7 +91,7 @@ class MovableObject extends DrawableObject {
         if (this instanceof ThrowableObject) {
             return this.y < 370;
         } else {
-            return this.y < 185;
+            return this.y < 195;
         }
     }
 
@@ -143,7 +167,7 @@ class MovableObject extends DrawableObject {
     throw() {
         this.playThrowSound();
         this.idleTime = null;
-        this.applyGravity(); 
+        this.applyGravityForThrowable();
         this.startBottleAnimation();
         this.setupThrowMotion();
     }
@@ -154,9 +178,9 @@ class MovableObject extends DrawableObject {
     setupThrowMotion() {
         this.moveInterval = setGameInterval(() => {
             this.x += this.speedX;
-            this.y -= this.speedY;  
-            this.speedY -= (this.acceleration - 2.5); 
-            
+            this.y -= this.speedY;
+            this.speedY -= (this.acceleration - 2.5);
+
             if (this.y >= 360) {
                 this.handleGroundCollision();
             }

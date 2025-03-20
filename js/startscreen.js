@@ -9,18 +9,10 @@ function playPopSound() {
  * Starts the game with fade animation
  */
 function startGame() {
-    let startscreen = document.getElementById('startscreen');
-    startscreen.style.display = 'none';
-    let canvasContainer = document.getElementById('canvas-container');
-    canvasContainer.style.display = 'block';
-    let canvas = document.getElementById('canvas');
-    canvas.style.display = 'block';
-    initLevel();
-    keyboard = new Keyboard();
-    world = new World(canvas, keyboard);
+    playPopSound();
     audioManager.playSound('audio/music.mp3', true, 0.3);
-    setupEventListeners();
-    window.scrollTo(0, 0);
+    fadeOutStartScreen();
+    showMuteButton();
 }
 
 /**

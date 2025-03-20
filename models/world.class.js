@@ -236,8 +236,7 @@ class World {
     canEnemyDamageCharacter(enemy) {
         return !enemy.isDead &&
             this.character.isColliding(enemy) &&
-            !this.character.isHurt() &&
-            !this.isJumpingOnEnemy(enemy);
+            !this.character.isHurt();
     }
 
     /**
@@ -313,91 +312,32 @@ class World {
         }
     }
 
-    /**
-     * Checks if character is jumping on enemies
-     * @returns {boolean} True if an enemy was jumped on
-     */
-    checkJumpOnEnemy() {
-        const enemiesToDefeat = this.findEnemiesBeingJumpedOn();
-        if (enemiesToDefeat.length > 0) {
-            this.applyJumpEffects(enemiesToDefeat);
-            return true;
+/**
+ * Checks if the character is jumping on any enemy.
+ * If so, it kills those enemies and returns true; otherwise false.
+ * @returns {boolean} - True if the character jumped on one or more enemies, otherwise false.
+ */
+checkJumpOnEnemy() {
+    let jumpedOnEnemy = false;
+    this.level.enemies.forEach((enemy) => {
+        if (!enemy.isDead && this.character.isAboveGround() && this.character.speedY < 0 && this.character.isColliding(enemy)) {
+            this.handleJumpOnEnemy(enemy);
+            jumpedOnEnemy = true;
         }
-        return false;
+    });
+    if (jumpedOnEnemy) {
+        this.character.speedY = 20;
     }
+    return jumpedOnEnemy;
+}
+
 
     /**
-     * Finds enemies that are being jumped on by the character
-     * @returns {Array} List of enemies being jumped on
-     */
-    findEnemiesBeingJumpedOn() {
-        return this.level.enemies.filter(enemy =>
-            !enemy.isDead && this.isJumpingOnEnemy(enemy)
-        );
-    }
-
-    /**
-     * Applies effects when jumping on enemies
-     * @param {Array} enemies - The enemies being jumped on
-     */
-    applyJumpEffects(enemies) {
-        const isTinyChicken = enemies.some(enemy => enemy instanceof ChickenTiny);
-        this.character.speedY = isTinyChicken ? 20 : 20;
-
-        enemies.forEach(enemy => {
-            enemy.hit();
-            enemy.stopMotion();
-        });
-    }
-
-    /**
-     * Checks if character is jumping on an enemy
-     * @param {MovableObject} enemy - The enemy to check
-     * @returns {boolean} True if character is jumping on the enemy
-     */
-    isJumpingOnEnemy(enemy) {
-        let characterBottom = this.character.y + this.character.height;
-        let enemyTop = enemy.y;
-        let { jumpThreshold, extraTolerance } = this.getJumpParameters(enemy);
-        return this.checkHorizontalOverlap(enemy, extraTolerance) &&
-            this.checkVerticalCollision(characterBottom, enemyTop, jumpThreshold, extraTolerance);
-    }
-
-    /**
-     * Gets jump parameters based on enemy type
-     * @param {MovableObject} enemy - The enemy to check
-     * @returns {Object} Jump threshold and tolerance values
-     */
-    getJumpParameters(enemy) {
-        if (enemy instanceof ChickenTiny) {
-            return { jumpThreshold: enemy.height * 0.7, extraTolerance: 5 };
-        }
-        return { jumpThreshold: enemy.height * 0.6, extraTolerance: 0 };
-    }
-
-    /**
-     * Checks horizontal overlap between character and enemy
-     * @param {MovableObject} enemy - The enemy to check
-     * @param {number} extraTolerance - Additional tolerance for collision detection
-     * @returns {boolean} True if there is horizontal overlap
-     */
-    checkHorizontalOverlap(enemy, extraTolerance) {
-        return this.character.x + this.character.width >= enemy.x + extraTolerance &&
-            this.character.x <= enemy.x + enemy.width - extraTolerance;
-    }
-
-    /**
-     * Checks vertical collision conditions for jumping on an enemy
-     * @param {number} characterBottom - Bottom y-position of character
-     * @param {number} enemyTop - Top y-position of enemy
-     * @param {number} jumpThreshold - Threshold for valid jump collision
-     * @param {number} extraTolerance - Additional tolerance for collision detection
-     * @returns {boolean} True if vertical collision conditions are met
-     */
-    checkVerticalCollision(characterBottom, enemyTop, jumpThreshold, extraTolerance) {
-        return this.character.speedY < 0 &&
-            characterBottom >= enemyTop - extraTolerance &&
-            characterBottom <= enemyTop + jumpThreshold + extraTolerance;
+ * Handles character jumping on an enemy to defeat it.
+ * @param {Object} enemy - The enemy being jumped on.
+ */
+    handleJumpOnEnemy(enemy) {
+        enemy.hit();
     }
 
     /**
@@ -545,6 +485,8 @@ class World {
             this.flipImage(mo);
         }
         mo.draw(this.ctx);
+        mo.drawFrame(this.ctx);
+
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }

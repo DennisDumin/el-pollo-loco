@@ -367,7 +367,7 @@ class Endboss extends MovableObject {
     scheduleRecovery() {
         this.recoveryTimeout = setTimeout(() => {
             if (this.world.character.isDead && this.world.character.isDead()) {
-                return; 
+                return;
             }
             this.isHurt = false;
             if (this.energy > 0) {
