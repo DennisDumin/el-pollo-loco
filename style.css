@@ -454,3 +454,34 @@ canvas {
         width: 100%;
     }
 }
+
+.game-tips,
+.game-objective {
+    margin-top: 10px;
+    font-size: 16px;
+    color: black;
+}
+
+.game-tips h3,
+.game-objective h3 {
+    font-size: 18px;
+    color: #000;
+    margin-bottom: 5px;
+}
+
+.game-tips ul {
+    padding-left: 20px;
+    list-style-type: none;
+}
+
+.game-objective strong {
+    color: brown;
+}
+
+hr {
+    border: none;
+    height: 2px;
+    background-color: #000;
+    margin: 20px 0;
+
+}

@@ -37,23 +37,6 @@ class DrawableObject {
     }
 
     /**
-     * Draws a frame around the object for debugging purposes
-     * @param {CanvasRenderingContext2D} ctx - The canvas context
-     */
-    drawFrame(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof ChickenTiny || 
-            this instanceof Endboss || this instanceof ThrowableObject || this instanceof Bottle) {
-            const { x, y, width, height } = this.getHitbox();
-
-            ctx.beginPath();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = 'red';
-            ctx.rect(x, y, width, height);
-            ctx.stroke();
-        }
-    }
-
-    /**
      * Draws the entire game world
      * @param {World} world - The game world
      */
@@ -176,7 +159,6 @@ class DrawableObject {
             try {
                 DrawableObject.addToMap(o, world);
             } catch (error) {
-                // Ignore drawing errors
             }
         });
     }
@@ -191,8 +173,6 @@ class DrawableObject {
             DrawableObject.flipImage(mo, world);
         }
         mo.draw(world.ctx);
-        mo.drawFrame(world.ctx);
-
         if (mo.otherDirection) {
             DrawableObject.flipImageBack(mo, world);
         }
